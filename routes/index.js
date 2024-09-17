@@ -1,8 +1,15 @@
 const express = require('express')
-const router = express().Router
+const router = express.Router()
 
-router.get('/', (req, res) => {
-  res.send('hello world')
-});
+const userController = require('../controllers/user-controller')
+const { generalErrorHandler } = require('../middlewares/error-handler')
+
+router.get('/signup', userController.signUpPage)
+router.post('/signup', userController.signUp)
+router.get('/signin', userController.signInPage)
+router.post('/signin', userController.signIn)
+
+router.get('/', (req, res) => res.redirect('/'))
+router.use('/', generalErrorHandler)
 
 module.exports = router

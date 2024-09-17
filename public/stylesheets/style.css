@@ -1,0 +1,42 @@
+.navbar {
+  background-color: #fcf3e3;
+}
+
+.navbar-brand {
+  
+  font-weight: 700;
+}
+
+.navbar a {
+  color: #013D5A;
+}
+
+h2 {
+  color: #013D5A;
+  font-weight: 700;
+}
+
+.button {
+  color: #013D5A;
+  background-color: #bdd3ce;
+  font-weight: 500;
+}
+
+.form-label {
+  color: #013D5A;
+}
+
+.inline-with-text {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 20px auto;
+}
+
+.inline-with-text::before,
+.inline-with-text::after {
+  content: " ";
+  flex: 1;
+  border-bottom: 2px solid #013D5A;
+  margin: 0 10px;
+}
