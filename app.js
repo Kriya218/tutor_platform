@@ -6,11 +6,12 @@ if (process.env.NODE_ENV === 'development') {
 const express = require('express')
 const flash = require('connect-flash')
 const session = require('express-session')
-const app = express()
 
 
 const { engine } = require('express-handlebars')
+const passport = require('./config/passport')
 
+const app = express()
 const routes = require('./routes')
 const port = process.env.PORT || 3000
 
@@ -26,13 +27,14 @@ app.use(session({
   resave: false,
   saveUninitialized: false
 }))
+app.use(passport.initialize())
+app.use(passport.session())
 app.use(flash())
 app.use((req, res, next) => {
   res.locals.success_msg = req.flash('success_msg')
   res.locals.error_msg = req.flash('error_msg')
   next()
 })
-
 
 app.use(routes);
 

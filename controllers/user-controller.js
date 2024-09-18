@@ -1,3 +1,4 @@
+const { logout } = require('../../forum-express-grading-github-actions/controllers/pages/user-controller')
 const userService = require('../services/user-service')
 
 const userController = {
@@ -14,10 +15,19 @@ const userController = {
   signInPage: (req, res) => {
     res.render('signin')
   },
-  signIn: (req, res, next) => {
-      
+  signIn: (req, res) => {
       req.flash('success_msg', '登入成功')
-      return res.render('index')
+      res.redirect('/tutors')
+  },
+  logout: (req, res) => {
+    req.logout(err => {
+      if (err) return next(err)
+      req.flash('success_msg', '登出成功')
+      return res.redirect('/signin')
+    })
+  },
+  getTutors: (req, res) => {
+    res.render('index')
   }
 }
 
