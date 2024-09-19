@@ -6,6 +6,7 @@ const userController = {
     res.render('signup')
   },
   signUp: (req, res, next) => {
+    if (req.body.password !== req.body.passwordCheck) throw new Error('密碼與確認密碼需一致')
     userService.signUp(req, (err, data) => {
       if (err) return next(err)
       req.flash('success_msg', '註冊成功')
@@ -27,7 +28,16 @@ const userController = {
     })
   },
   getTutors: (req, res) => {
-    res.render('index')
+    userService.getTutors(req, (err, data) => {
+      if (err) next(err)
+      if (req.user.role === 'admin') {
+        req.flash('error_msg', '管理者無檢視前台權限')
+        return res.redirect('/signin')
+      }
+      console.log('pagination:', data.pagination)
+      res.render('index', data)
+    })
+    
   }
 }
 

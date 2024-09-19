@@ -10,12 +10,13 @@ const session = require('express-session')
 
 const { engine } = require('express-handlebars')
 const passport = require('./config/passport')
+const handlebarsHelpers = require('./helpers/handlebars-helpers')
 
 const app = express()
 const routes = require('./routes')
 const port = process.env.PORT || 3000
 
-app.engine('.hbs', engine({ extname: '.hbs' }))
+app.engine('.hbs', engine({ extname: '.hbs', helpers: handlebarsHelpers }))
 app.set('view engine', '.hbs')
 app.set('views', './views')
 

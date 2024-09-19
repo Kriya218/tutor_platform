@@ -1,9 +1,19 @@
+a {
+  text-decoration: none;
+  color: #013D5A;
+}
+
+a:hover {
+  color: #f4a258;
+  text-decoration: none;
+}
+
 .navbar {
   background-color: #fcf3e3;
 }
 
 .navbar-brand {
-  
+  font-size: x-large;
   font-weight: 700;
 }
 
@@ -40,3 +50,31 @@ h2 {
   border-bottom: 2px solid #013D5A;
   margin: 0 10px;
 }
+
+.index-img {
+  width: 30%;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  border: 1px solid lightgray;
+  object-fit: cover;
+}
+
+.tutor-card {
+  border-color: #f4a258;
+}
+
+.card-title {
+  word-break: break-all;
+}
+
+.st-rank p {
+  font-size: smaller;
+  color: #708c69;
+  margin-bottom: 0%;
+}
+
+.st-rank h6 {
+  color: #708c69;
+  margin: 5px 0;
+}
+

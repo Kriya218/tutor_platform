@@ -7,9 +7,15 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
       <div class="navbar-nav">
-        <a class="nav-link" href="/signup">註冊會員</a>
-        <a class="nav-link" href="/signin">登入帳號</a>
+        {{#ifCond role 'tutor'}}
+        <a class="nav-link" href="/tutors/:id">{{name}}</a>
+        {{/ifCond}}
+        {{#ifCond role 'student'}}
+        <a class="nav-link" href="/user/:id">{{name}}</a>
+        <a class="nav-link" href="/tutors/apply">成為老師</a>
+        {{/ifCond}}
       </div>
     </div>
+    <a href="/logout" class="me-5"> <i class="fa-solid fa-right-from-bracket me-1"></i>Logout</a>
   </div>
 </nav>
