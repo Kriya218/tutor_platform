@@ -28,7 +28,12 @@ h2 {
 
 .button {
   color: #013D5A;
-  background-color: #bdd3ce;
+  border-color: #013D5A;
+  font-weight: 500;
+}
+.button:hover {
+  color: white;
+  background-color:#013D5A;
   font-weight: 500;
 }
 

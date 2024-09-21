@@ -1,6 +1,10 @@
 {{> header}}
 {{> messages}}
 {{!-- search bar --}}
+<form class="d-flex mx-auto col-md-4" action="/tutors">
+  <input class="form-control me-2" type="search" placeholder="請輸入老師名稱或課程名稱" aria-label="Search" style="border-color:#013D5A;" name="keywords">
+  <button class="btn button" type="submit">Search</button>
+</form>
 {{!-- cards --}}
 <div class="d-flex justify-content-between p-5">
   <div class="col-md-9">

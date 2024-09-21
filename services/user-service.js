@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs')
 const { User, Tutor_info } = require('../models')
 const { getOffset, getPagination } = require('../helpers/pagination-helper')
+const { Op, where } = require('sequelize')
 
 const userService = {
   signUp: (req, cb) => {
@@ -21,9 +22,18 @@ const userService = {
   getTutors: (req, cb) => {
     const limit = 9
     const page = Number(req.query.page) || 1
+    const keywords = req.query.keywords?.toLowerCase()
+    const whereCond = keywords ? {
+      [Op.or]: [
+        { courseName: { [Op.like]: `%${keywords}%` } },
+        { introduction: { [Op.like]: `%${keywords}%` } },
+        { '$user.name$': { [Op.like]: `%${keywords}%` } }
+      ]
+    } : {}
     return Promise.all([
       Tutor_info.findAndCountAll({
         attributes: ['id', 'courseName', 'introduction'],
+        where: whereCond,
         include: [{ 
           model: User, 
           as: 'user',
