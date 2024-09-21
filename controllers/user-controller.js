@@ -1,4 +1,3 @@
-const { logout } = require('../../forum-express-grading-github-actions/controllers/pages/user-controller')
 const userService = require('../services/user-service')
 
 const userController = {
@@ -34,10 +33,18 @@ const userController = {
         req.flash('error_msg', '管理者無檢視前台權限')
         return res.redirect('/signin')
       }
-      console.log('pagination:', data.pagination)
       res.render('index', data)
+    }) 
+  },
+  getApplyPage: (req, res) => {
+    res.render('apply')
+  },
+  tutorApply: (req, res) => {
+    userService.tutorApply(req, (err, data) => {
+      if (err) next(err)
+      req.flash('success_msg', '老師資格申請成功')
+      return res.redirect('/tutors')
     })
-    
   }
 }
 

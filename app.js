@@ -22,6 +22,7 @@ app.set('views', './views')
 
 app.use(express.urlencoded({ extended: true }))
 app.use(express.static('public'))
+app.use(express.json())
 
 app.use(session({
   secret: process.env.SESSION_SECRET,
@@ -37,7 +38,7 @@ app.use((req, res, next) => {
   next()
 })
 
-app.use(routes);
+app.use(routes)
 
 
 app.listen(port, () => {

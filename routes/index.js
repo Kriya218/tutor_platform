@@ -23,6 +23,8 @@ router.get('/oauth/redirect/google', passport.authenticate('google', {
 }), userController.signIn)
 router.get('/logout', userController.logout)
 
+router.get('/tutors/apply', authenticated, userController.getApplyPage)
+router.post('/tutors/apply', authenticated, userController.tutorApply)
 router.get('/tutors', authenticated, userController.getTutors)
 
 router.get('/', (req, res) => res.redirect('/tutors'))

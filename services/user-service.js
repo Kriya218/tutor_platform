@@ -4,7 +4,7 @@ const { getOffset, getPagination } = require('../helpers/pagination-helper')
 
 const userService = {
   signUp: (req, cb) => {
-    User.findOne({ where: { email: req.body.email } })
+    return User.findOne({ where: { email: req.body.email } })
       .then(user => {
         if (user) throw new Error('此 email 已註冊')
         return bcrypt.hash(req.body.password, 10)
@@ -50,7 +50,6 @@ const userService = {
             ...tutorInfo,
             introduction: tutorInfo.introduction ? tutorInfo.introduction.substring(0, 60) : ''
         }))
-        console.log('tutors:', tutors)
         return cb(null, { 
           id, 
           name, 
@@ -60,7 +59,32 @@ const userService = {
           pagination: getPagination(limit, page, tutorInfos.count)
         })
       })
-  } 
+  } ,
+  tutorApply: (req, cb) => {
+    const { aboutMe, courseName, introduction, teachingStyle, meetingLink, courseDuration, days } = req.body
+    return User.findByPk(req.user.id, {
+      attributes: ['id', 'name', 'role']
+    })
+      .then(user => {
+        if (user.role === 'tutor') throw new Error('身分已為老師')
+        return Tutor_info.create({
+          aboutMe, 
+          courseName, 
+          introduction,
+          teachingStyle, 
+          meetingLink, 
+          courseDuration, 
+          days
+        })
+      })
+      .then(tutor => {
+        User.update(
+          { tutor_info_id: tutor.id, role: 'tutor' }, 
+          { where: { id: req.user.id } }
+        )
+        return cb(null, tutor.toJSON())
+      })
+  }
 }
 
 module.exports = userService

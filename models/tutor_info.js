@@ -33,7 +33,9 @@ module.exports = (sequelize, DataTypes) => {
     meetingLink: {
       type: DataTypes.STRING,
       allowNull: true
-    }
+    },
+    courseDuration: DataTypes.ENUM('30', '60'),
+    days: DataTypes.JSON
   }, {
     sequelize,
     modelName: 'Tutor_info',

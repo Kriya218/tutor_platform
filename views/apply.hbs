@@ -1,0 +1,84 @@
+{{>header}}
+{{> messages}}
+<div class="container col-md-6">
+  <h2 class="mt-3 d-flex justify-content-center">Tutor Application</h2>
+  <div class="mt-3">
+    <form action="/tutors/apply" method="POST">
+      <div class="mb-3">
+        <label for="aboutMe" class="form-label">個人描述</label>
+        <textarea class="form-control" id="aboutMe" name="aboutMe" rows="3" required></textarea>
+      </div>
+      <div class="mb-3"></div>
+        <label for="courseName" class="form-label">課程名稱</label>
+        <input type="text" class="form-control" id="courseName" name="courseName" required>
+      </div>
+      <div class="mb-3">
+        <label for="introduction" class="form-label">課程介紹</label>
+        <textarea class="form-control" id="introduction" name="introduction" rows="3" required></textarea>
+      </div>
+      <div class="mb-3">
+        <label for="teachingStyle" class="form-label">教學風格</label>
+        <textarea class="form-control" id="teachingStyle" name="teachingStyle" rows="3" required></textarea>
+      </div>
+      <div class="mb-3">
+        <label for="meetingLink" class="form-label">上課視訊連結</label>
+        <input type="text" class="form-control" id="meetingLink" name="meetingLink" required>
+      </div>
+      <div class="mb-3">
+        <label for="courseDuration" class="form-label">單堂課程時長</label>
+        <select class="form-select form-select-sm" name="courseDuration" id="courseDuration" required>
+          <option value="30" selected>30 分鐘</option>
+          <option value="60">60分鐘</option>
+        </select>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">可預約時間</label>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" value="monday" id="mon" name="days">
+          <label class="form-check-label" for="mon">
+            星期一
+          </label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" value="tuesday" id="tue" name="days">
+          <label class="form-check-label" for="tue">
+            星期二
+          </label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" value="wednesday" id="wed" name="days">
+          <label class="form-check-label" for="wed">
+            星期三
+          </label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" value="thursday" id="thu" name="days">
+          <label class="form-check-label" for="thu">
+            星期四
+          </label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" value="friday" id="fri" name="days">
+          <label class="form-check-label" for="fri">
+            星期五
+          </label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" value="saturday" id="sat" name="days[]">
+          <label class="form-check-label" for="sat">
+            星期六
+          </label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" value="sunday" id="sun" name="days">
+          <label class="form-check-label" for="sun">
+            星期日
+          </label>
+        </div>
+
+      </div>
+      
+      <button type="submit" class="btn button d-flex mx-auto">Submit</button>
+    </form>
+  </div>
+</div>
