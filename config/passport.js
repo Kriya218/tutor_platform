@@ -60,11 +60,14 @@ passport.use(new GoogleStrategy({
 }))
 
 passport.serializeUser((user, cb) => {
-  cb(null, user.id)
+  cb(null, {
+    id: user.id,
+    tutorInfoId: user.tutor_info_id
+  })
 })
 
-passport.deserializeUser((id, cb) => {
-  return User.findByPk(id)
+passport.deserializeUser((data, cb) => {
+  return User.findByPk(data.id)
     .then(user => cb(null, user.toJSON()))
     .catch(err => cb(err))
 })

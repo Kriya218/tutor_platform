@@ -48,6 +48,23 @@ const userController = {
   },
   getTutorProfile: (req, res, next) => {
     userService.getTutorProfile(req, (err, data) => err ? next(err) : res.render('tutor-profile', data))
+  },
+  getTutorPage: (req, res, next) => {
+    if (req.user.id !== Number(req.params.id)) {
+        req.flash('error_msg', '無權限檢視頁面')
+        return res.redirect('/tutors')
+      }
+    userService.getTutorPage(req, (err, data) => err ? next(err) : res.render('tutor', data))
+  },
+  editTutor: (req, res, next) => {
+    userService.editTutor(req, (err, data) => err ? next(err) : res.render('tutor-edit', data))
+  },
+  putTutor: (req, res, next) => {
+    userService.putTutor(req, (err, data) => {
+      if (err) next(err)
+      req.flash('success_msg', '編輯成功')
+      return res.redirect(`/tutors/${req.user.id}`)
+    })
   }
 }
 

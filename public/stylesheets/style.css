@@ -104,3 +104,7 @@ h2 {
   background-color:#fcf3e3;
   display: inline;
 }
+
+.apply-form .form-label {
+  font-weight: 600;
+}

@@ -1,0 +1,76 @@
+<div class="mb-3">
+  <label for="aboutMe" class="form-label">個人描述</label>
+  <textarea class="form-control" id="aboutMe" name="aboutMe" rows="3"  required>{{user.tutorInfo.aboutMe}}</textarea>
+</div>
+<div class="mb-3">
+  <label for="courseName" class="form-label">課程名稱</label>
+  <input type="text" class="form-control" id="courseName" name="courseName" value="{{user.tutorInfo.courseName}}" required>
+</div>
+<div class="mb-3">
+  <label for="introduction" class="form-label">課程介紹</label>
+  <textarea class="form-control" id="introduction" name="introduction" rows="3" required>{{user.tutorInfo.introduction}}</textarea>
+</div>
+<div class="mb-3">
+  <label for="teachingStyle" class="form-label">教學風格</label>
+  <textarea class="form-control" id="teachingStyle" name="teachingStyle" rows="3" required>{{user.tutorInfo.introduction}}</textarea>
+</div>
+<div class="mb-3">
+  <label for="meetingLink" class="form-label">上課視訊連結</label>
+  <input type="text" class="form-control" id="meetingLink" name="meetingLink" value="{{user.tutorInfo.meetingLink}}" required>
+</div>
+<div class="mb-3">
+  <label for="courseDuration" class="form-label">單堂課程時長</label>
+  <select class="form-select form-select-sm" name="courseDuration" id="courseDuration" required>
+    <option value="30" {{#ifCond user.tutorInfo.courseDuration '30'}}selected{{/ifCond}} selected>30 分鐘</option>
+    <option value="60" {{#ifCond user.tutorInfo.courseDuration '60'}}selected{{/ifCond}}>60分鐘</option>
+  </select>
+</div>
+<div class="mb-3 ">
+  <label class="form-label">可預約時間</label>
+  <div class="d-flex col">
+    <div class="form-check me-3">
+      <input class="form-check-input" type="checkbox" value="monday" id="mon" name="days" {{#if (isInclude user.tutorInfo.days 'monday')}}checked{{/if}}>
+      <label class="form-check-label" for="mon">
+        星期一
+      </label>
+    </div>
+    <div class="form-check me-3">
+      <input class="form-check-input" type="checkbox" value="tuesday" id="tue" name="days" {{#if (isInclude user.tutorInfo.days 'tuesday')}}checked{{/if}}>
+      <label class="form-check-label" for="tue">
+        星期二
+      </label>
+    </div>
+    <div class="form-check me-3">
+      <input class="form-check-input" type="checkbox" value="wednesday" id="wed" name="days" {{#if (isInclude user.tutorInfo.days 'wednesday')}}checked{{/if}}>
+      <label class="form-check-label" for="wed">
+        星期三
+      </label>
+    </div>
+    <div class="form-check me-3">
+      <input class="form-check-input" type="checkbox" value="thursday" id="thu" name="days" {{#if (isInclude user.tutorInfo.days 'thursday')}}checked{{/if}}>
+      <label class="form-check-label" for="thu">
+        星期四
+      </label>
+    </div>
+    <div class="form-check me-3">
+      <input class="form-check-input" type="checkbox" value="friday" id="fri" name="days" {{#if (isInclude user.tutorInfo.days 'friday')}}checked{{/if}}>
+      <label class="form-check-label" for="fri">
+        星期五
+      </label>
+    </div>
+    <div class="form-check me-3">
+      <input class="form-check-input" type="checkbox" value="saturday" id="sat" name="days" {{#if (isInclude user.tutorInfo.days 'saturday')}}checked{{/if}}>
+      <label class="form-check-label" for="sat">
+        星期六
+      </label>
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" value="sunday" id="sun" name="days" {{#if (isInclude user.tutorInfo.days 'sunday')}}checked{{/if}}>
+      <label class="form-check-label" for="sun">
+        星期日
+      </label>
+    </div>
+  </div>
+</div>
+
+<button type="submit" class="btn button d-flex mx-auto mt-5 mb-5">Submit</button>

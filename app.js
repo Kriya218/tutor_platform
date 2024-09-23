@@ -7,13 +7,14 @@ const express = require('express')
 const flash = require('connect-flash')
 const session = require('express-session')
 
-
 const { engine } = require('express-handlebars')
 const passport = require('./config/passport')
 const handlebarsHelpers = require('./helpers/handlebars-helpers')
+const methodOverride = require('method-override')
 
 const app = express()
 const routes = require('./routes')
+const path = require('path')
 const port = process.env.PORT || 3000
 
 app.engine('.hbs', engine({ extname: '.hbs', helpers: handlebarsHelpers }))
@@ -23,6 +24,8 @@ app.set('views', './views')
 app.use(express.urlencoded({ extended: true }))
 app.use(express.static('public'))
 app.use(express.json())
+app.use(methodOverride('_method'))
+app.use('/upload', express.static(path.join(__dirname, 'upload')))
 
 app.use(session({
   secret: process.env.SESSION_SECRET,

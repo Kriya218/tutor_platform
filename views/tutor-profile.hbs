@@ -2,11 +2,11 @@
 {{> messages}}
 <div class="container d-flex ">
   <div class="row justify-content-between">
-    <div class="mt-3 col-md-7">
+    <div class="mt-3 col-md-8">
       <div class="d-flex">
         <img src="{{user.image}}" class="profile-img" alt="student-photo">
         <div class="flex-column ms-5">
-          <h3 class="my-3">{{user.Tutor_info.courseName}}</h3>
+          <h3 class="my-3">{{user.tutorInfo.courseName}}</h3>
           <ul>
             <li>{{user.name}} 老師</li>
             <li><i class="fa-solid fa-star me-1" style="color: #f4a258;"></i>評分</li>
@@ -16,11 +16,11 @@
     
       <div class="container mt-5 tutor-profile flex-column">
         <h5>自我介紹</h5>
-        <p>{{user.Tutor_info.aboutMe}}</p>
+        <p>{{user.tutorInfo.aboutMe}}</p>
         <h5>教學風格</h5>
-        <p>{{user.Tutor_info.teachingStyle}}</p>
+        <p>{{user.tutorInfo.teachingStyle}}</p>
         <h5>課程內容</h5>
-        <p>{{user.Tutor_info.introduction}}</p>
+        <p>{{user.tutorInfo.introduction}}</p>
       </div>
     </div>
     

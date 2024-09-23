@@ -2,7 +2,7 @@ const bcrypt = require('bcryptjs')
 const { User, Tutor_info } = require('../models')
 const { getOffset, getPagination } = require('../helpers/pagination-helper')
 const { Op } = require('sequelize')
-const { raw } = require('express')
+const { localFileHandler } = require('../helpers/file.helper')
 
 const userService = {
   signUp: (req, cb) => {
@@ -103,15 +103,74 @@ const userService = {
 
     return User.findByPk(tutorId, {
       attributes: ['id', 'name', 'image', 'tutor_info_id', 'role'],
-      include: [{model: Tutor_info}],
+      include: [{model: Tutor_info, as: 'tutorInfo'}],
       raw: true,
       nest: true
     })
       .then(user => {
         if (!user) throw new Error('此使用者不存在')
         if (user.role !== 'tutor') throw new Error('使用者身分非老師')
-        console.log('User:', user)
         return cb(null, { user })
+      })
+      .catch(err => cb(err))
+  },
+  getTutorPage: (req, cb) => {
+    return User.findByPk(req.user.id, {
+      attributes: ['id', 'name', 'image', 'role', 'tutor_info_id'],
+      include:[{ 
+        model: Tutor_info,
+        as: 'tutorInfo'
+      }],
+      raw: true,
+      nest: true
+    })
+      .then(user => {
+        if (user.role !== 'tutor') throw new Error('無權限檢視頁面')
+        cb(null, { user })
+      })
+      .catch(err => cb(err))
+  },
+  editTutor: (req, cb) => {
+    return User.findByPk(req.params.id, {
+      attributes: ['id', 'name', 'tutor_info_id'],
+      include: [{ 
+        model: Tutor_info,
+        as:'tutorInfo'
+      }],
+      raw: true,
+      nest: true
+    })
+      .then(user => {
+        if (!user) throw new Error('此用戶不存在')
+        if (user.id !== req.user.id) throw new Error('無編輯權限')
+        return cb(null, { user })
+      })
+      .catch(err => cb(err))
+  },
+  putTutor: (req, cb) => {
+    const { file } = req
+    const { name, image, aboutMe, introduction, teachingStyle, courseName, meetingLink, courseDuration, days } = req.body
+    return Promise.all([
+      User.findByPk(req.user.id),
+      Tutor_info.findByPk(req.user.tutorInfoId),
+      localFileHandler(file)
+    ])
+      .then(([user, tutorInfo, filePath]) => {
+        if (!user) throw new Error('使用者不存在')
+        user.update({
+          name,
+          image: filePath || user.image
+        })
+        tutorInfo.update({
+          aboutMe,
+          introduction, 
+          teachingStyle,
+          courseName,
+          meetingLink,
+          courseDuration,
+          days
+        })
+        return cb(null, { user: user.toJSON(), tutorInfo: tutorInfo.toJSON() })
       })
       .catch(err => cb(err))
   }

@@ -1,0 +1,18 @@
+{{>header}}
+{{>messages}}
+<div class="container col-md-6">
+  <h2 class="mt-3 d-flex justify-content-center">Tutor info edit</h2>
+  <div class="mt-3">
+    <form action="/tutors/{{user.id}}/edit?_method=PUT" method="POST" class="apply-form" enctype="multipart/form-data">
+      <div class="mb-3">
+        <label for="name" class="form-label">名稱</label>
+        <input type="text" class="form-control" id="name" name="name" value="{{user.name}}" required>
+      </div>
+      <div class="mb-3">
+        <label for="image" class="form-label">上傳照片</label>
+        <input type="file" class="form-control" id="image" name="image">
+      </div>
+      {{>tutor-form}}
+    </form>
+  </div>
+</div>
