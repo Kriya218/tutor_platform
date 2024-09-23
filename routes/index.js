@@ -25,7 +25,9 @@ router.get('/logout', userController.logout)
 
 router.get('/tutors/apply', authenticated, userController.getApplyPage)
 router.post('/tutors/apply', authenticated, userController.tutorApply)
+router.get('/tutors/:id/profile', authenticated, userController.getTutorProfile)
 router.get('/tutors', authenticated, userController.getTutors)
+
 
 router.get('/', (req, res) => res.redirect('/tutors'))
 router.use('/', generalErrorHandler)

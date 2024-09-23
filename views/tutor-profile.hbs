@@ -1,0 +1,37 @@
+{{>header}}
+{{> messages}}
+<div class="container d-flex ">
+  <div class="row justify-content-between">
+    <div class="mt-3 col-md-7">
+      <div class="d-flex">
+        <img src="{{user.image}}" class="profile-img" alt="student-photo">
+        <div class="flex-column ms-5">
+          <h3 class="my-3">{{user.Tutor_info.courseName}}</h3>
+          <ul>
+            <li>{{user.name}} 老師</li>
+            <li><i class="fa-solid fa-star me-1" style="color: #f4a258;"></i>評分</li>
+            </ui>
+        </div>
+      </div>
+    
+      <div class="container mt-5 tutor-profile flex-column">
+        <h5>自我介紹</h5>
+        <p>{{user.Tutor_info.aboutMe}}</p>
+        <h5>教學風格</h5>
+        <p>{{user.Tutor_info.teachingStyle}}</p>
+        <h5>課程內容</h5>
+        <p>{{user.Tutor_info.introduction}}</p>
+      </div>
+    </div>
+    
+    <div class="col-md-3">
+      <div class="mb-3">
+        <label for="courseDuration" class="form-label">預約課程</label>
+        <select class="form-select form-select-sm" name="courseDuration" id="courseDuration" required>
+          <option value="30" selected>30 分鐘</option>
+          <option value="60">60分鐘</option>
+        </select>
+      </div>
+    </div>
+  </div>
+</div>

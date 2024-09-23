@@ -8,6 +8,12 @@ a:hover {
   text-decoration: none;
 }
 
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
 .navbar {
   background-color: #fcf3e3;
 }
@@ -66,10 +72,12 @@ h2 {
 
 .tutor-card {
   border-color: #f4a258;
+    color: grey;
 }
 
 .card-title {
   word-break: break-all;
+  font-weight: 600;
 }
 
 .st-rank p {
@@ -83,3 +91,16 @@ h2 {
   margin: 5px 0;
 }
 
+.profile-img {
+  width: 15%;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid lightgray;
+}
+
+.tutor-profile h5 {
+  font-weight: 600;
+  background-color:#fcf3e3;
+  display: inline;
+}

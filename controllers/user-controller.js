@@ -26,25 +26,28 @@ const userController = {
       return res.redirect('/signin')
     })
   },
-  getTutors: (req, res) => {
+  getTutors: (req, res, next) => {
     userService.getTutors(req, (err, data) => {
       if (err) next(err)
       if (req.user.role === 'admin') {
         req.flash('error_msg', '管理者無檢視前台權限')
         return res.redirect('/signin')
       }
-      res.render('index', data)
+      return res.render('index', data)
     }) 
   },
   getApplyPage: (req, res) => {
     res.render('apply')
   },
-  tutorApply: (req, res) => {
+  tutorApply: (req, res, next) => {
     userService.tutorApply(req, (err, data) => {
       if (err) next(err)
       req.flash('success_msg', '老師資格申請成功')
       return res.redirect('/tutors')
     })
+  },
+  getTutorProfile: (req, res, next) => {
+    userService.getTutorProfile(req, (err, data) => err ? next(err) : res.render('tutor-profile', data))
   }
 }
 

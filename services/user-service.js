@@ -1,7 +1,8 @@
 const bcrypt = require('bcryptjs')
 const { User, Tutor_info } = require('../models')
 const { getOffset, getPagination } = require('../helpers/pagination-helper')
-const { Op, where } = require('sequelize')
+const { Op } = require('sequelize')
+const { raw } = require('express')
 
 const userService = {
   signUp: (req, cb) => {
@@ -69,6 +70,7 @@ const userService = {
           pagination: getPagination(limit, page, tutorInfos.count)
         })
       })
+      .catch(err => cb(err))
   } ,
   tutorApply: (req, cb) => {
     const { aboutMe, courseName, introduction, teachingStyle, meetingLink, courseDuration, days } = req.body
@@ -94,6 +96,24 @@ const userService = {
         )
         return cb(null, tutor.toJSON())
       })
+      .catch(err => cb(err))
+  },
+  getTutorProfile: (req, cb) => {
+    const tutorId = req.params.id
+
+    return User.findByPk(tutorId, {
+      attributes: ['id', 'name', 'image', 'tutor_info_id', 'role'],
+      include: [{model: Tutor_info}],
+      raw: true,
+      nest: true
+    })
+      .then(user => {
+        if (!user) throw new Error('此使用者不存在')
+        if (user.role !== 'tutor') throw new Error('使用者身分非老師')
+        console.log('User:', user)
+        return cb(null, { user })
+      })
+      .catch(err => cb(err))
   }
 }
 
