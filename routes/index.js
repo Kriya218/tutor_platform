@@ -9,8 +9,6 @@ const { authenticated } = require('../middlewares/auth')
 const upload = require('../middlewares/multer')
 const { generalErrorHandler } = require('../middlewares/error-handler')
 
-
-
 router.get('/signup', userController.signUpPage)
 router.post('/signup', userController.signUp)
 router.get('/signin', userController.signInPage)
@@ -33,6 +31,9 @@ router.put('/tutors/:id/edit', authenticated, upload.single('image'), userContro
 router.get('/tutors/:id', authenticated, userController.getTutorPage)
 router.get('/tutors', authenticated, userController.getTutors)
 
+router.get('/user/:id/edit', authenticated, userController.editUser)
+router.put('/user/:id/edit', authenticated, upload.single('image'), userController.putUser)
+router.get('/user/:id', authenticated, userController.getUser)
 
 router.get('/', (req, res) => res.redirect('/tutors'))
 router.use('/', generalErrorHandler)

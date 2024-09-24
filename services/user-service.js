@@ -80,7 +80,6 @@ const userService = {
       .then(user => {
         if (user.role === 'tutor') throw new Error('身分已為老師')
         return Tutor_info.create({
-          aboutMe, 
           courseName, 
           introduction,
           teachingStyle, 
@@ -91,7 +90,7 @@ const userService = {
       })
       .then(tutor => {
         User.update(
-          { tutor_info_id: tutor.id, role: 'tutor' }, 
+          { tutor_info_id: tutor.id, role: 'tutor', aboutMe }, 
           { where: { id: req.user.id } }
         )
         return cb(null, tutor.toJSON())
@@ -100,23 +99,30 @@ const userService = {
   },
   getTutorProfile: (req, cb) => {
     const tutorId = req.params.id
-
     return User.findByPk(tutorId, {
-      attributes: ['id', 'name', 'image', 'tutor_info_id', 'role'],
+      attributes: ['id', 'name', 'image', 'tutor_info_id', 'role', 'aboutMe'],
       include: [{model: Tutor_info, as: 'tutorInfo'}],
       raw: true,
       nest: true
     })
       .then(user => {
-        if (!user) throw new Error('此使用者不存在')
-        if (user.role !== 'tutor') throw new Error('使用者身分非老師')
-        return cb(null, { user })
+        if (!user) {
+          const err = new Error('使用者不存在')
+          err.status = 404
+          throw err
+        }
+        if (user.role !== 'tutor') {
+          const err = new Error('使用者身分非老師')
+          err.status = 403
+          throw err
+        }
+        cb(null, { user })
       })
       .catch(err => cb(err))
   },
   getTutorPage: (req, cb) => {
     return User.findByPk(req.user.id, {
-      attributes: ['id', 'name', 'image', 'role', 'tutor_info_id'],
+      attributes: ['id', 'name', 'image', 'role', 'tutor_info_id', 'aboutMe'],
       include:[{ 
         model: Tutor_info,
         as: 'tutorInfo'
@@ -125,14 +131,18 @@ const userService = {
       nest: true
     })
       .then(user => {
-        if (user.role !== 'tutor') throw new Error('無權限檢視頁面')
+        if (user.role !== 'tutor') {
+          const err = new Error('身分非老師無法檢視')
+          err.status = 403
+          throw err
+        }
         cb(null, { user })
       })
       .catch(err => cb(err))
   },
   editTutor: (req, cb) => {
     return User.findByPk(req.params.id, {
-      attributes: ['id', 'name', 'tutor_info_id'],
+      attributes: ['id', 'name', 'tutor_info_id', 'aboutMe'],
       include: [{ 
         model: Tutor_info,
         as:'tutorInfo'
@@ -159,10 +169,10 @@ const userService = {
         if (!user) throw new Error('使用者不存在')
         user.update({
           name,
+          aboutMe,
           image: filePath || user.image
         })
         tutorInfo.update({
-          aboutMe,
           introduction, 
           teachingStyle,
           courseName,
@@ -171,6 +181,55 @@ const userService = {
           days
         })
         return cb(null, { user: user.toJSON(), tutorInfo: tutorInfo.toJSON() })
+      })
+      .catch(err => cb(err))
+  },
+  getUser: (req, cb) => {
+    const userId = req.user.id
+
+    return User.findByPk(req.params.id, { 
+      attributes: ['id', 'name', 'image', 'role', 'aboutMe'],
+      raw: true 
+    })
+      .then(user => {
+        if (!user) throw new Error('此用戶不存在')
+        if (user.role === 'tutor') {
+          const err = new Error('此頁面不存在')
+          err.status = 404
+          throw err
+        }
+        
+        cb(null, { user, userId })
+      })
+      .catch(err => cb(err))
+  },
+  editUser: (req, cb) => {
+    return User.findByPk(req.params.id, {
+      attributes: ['id', 'name', 'image', 'aboutMe', 'role'],
+      raw: true
+    })
+      .then(user => {
+        if (!user) throw new Error('使用者不存在')
+        if (user.role !== 'student') throw new Error('頁面不存在')
+        return cb(null, { user })
+      })
+      .catch(err => cb(err))
+  },
+  putUser: (req, cb) => {
+    const { name, image, aboutMe } = req.body
+    const { file } = req
+    return Promise.all([
+      User.findByPk(req.params.id),
+      localFileHandler(file)
+    ])
+      .then(([user, filePath]) => {
+        if (!user) throw new Error('使用者不存在')
+        user.update({
+          name,
+          image: filePath || user.image,
+          aboutMe
+        })
+        return cb(null, { user: user.toJSON() })
       })
       .catch(err => cb(err))
   }

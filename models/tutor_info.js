@@ -14,10 +14,6 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Tutor_info.init({
-    aboutMe: {
-      type: DataTypes.TEXT,
-      allowNull: false
-    },
     courseName: {
       type: DataTypes.STRING,
       allowNull: false

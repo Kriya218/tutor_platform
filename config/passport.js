@@ -17,7 +17,6 @@ passport.use(new LocalStrategy(
           return cb(null, false)
         }
         bcrypt.compare(password, user.password).then(res => {
-          console.log('密碼錯誤')
           if (!res) { 
             req.flash('error_msg', 'email或密碼錯誤')
             return cb(null, false)

@@ -38,7 +38,8 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: 0,
       allowNull: false
     },
-    tutorInfoId: DataTypes.NUMBER
+    tutorInfoId: DataTypes.NUMBER,
+    aboutMe: DataTypes.TEXT,
   }, {
     sequelize,
     modelName: 'User',

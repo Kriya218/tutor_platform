@@ -41,20 +41,35 @@ const userController = {
   },
   tutorApply: (req, res, next) => {
     userService.tutorApply(req, (err, data) => {
-      if (err) next(err)
+      if (err) return next(err)
       req.flash('success_msg', '老師資格申請成功')
       return res.redirect('/tutors')
     })
   },
   getTutorProfile: (req, res, next) => {
-    userService.getTutorProfile(req, (err, data) => err ? next(err) : res.render('tutor-profile', data))
+    userService.getTutorProfile(req, (err, data) => {
+      if (err) {
+        req.flash('error_msg', err.message)
+        req.flash('status_code', err.status)
+        res.redirect('/tutors')
+      }
+      res.render('tutor-profile', data)
+    })
   },
   getTutorPage: (req, res, next) => {
     if (req.user.id !== Number(req.params.id)) {
-        req.flash('error_msg', '無權限檢視頁面')
-        return res.redirect('/tutors')
+      req.flash('error_msg', '無檢視頁面權限')
+      req.flash('status_code', 403)
+      res.redirect('/tutors')
       }
-    userService.getTutorPage(req, (err, data) => err ? next(err) : res.render('tutor', data))
+    userService.getTutorPage(req, (err, data) => {
+      if (err) {
+        req.flash('error_msg', err.message)
+        req.flash('status_code', err.status)
+        res.redirect('/tutors')
+      }
+      return res.render('tutor', data)
+    })
   },
   editTutor: (req, res, next) => {
     userService.editTutor(req, (err, data) => err ? next(err) : res.render('tutor-edit', data))
@@ -64,6 +79,27 @@ const userController = {
       if (err) next(err)
       req.flash('success_msg', '編輯成功')
       return res.redirect(`/tutors/${req.user.id}`)
+    })
+  },
+  getUser: (req, res, next) => {
+    userService.getUser(req, (err, data) => {
+      if (err) {
+        req.flash('error_msg', err.message)
+        req.flash('status_code', err.status)
+        return res.redirect('/tutors')
+      }
+      res.render('student', data)
+    })
+  },
+  editUser: (req, res, next) => {
+    if (req.user.id !== Number(req.params.id)) throw new Error('無編輯權限')
+    userService.editUser(req, (err, data) => err ? next(err) : res.render('student-edit', data))
+  },
+  putUser: (req, res, next) => {
+    userService.putUser(req, (err, data) => {
+      if (err) return next(err)
+      req.flash('success_msg', '編輯成功')
+      return res.redirect(`/user/${req.user.id}`)
     })
   }
 }
