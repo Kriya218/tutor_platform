@@ -2,7 +2,7 @@ const bcrypt = require('bcryptjs')
 const { User, Tutor_info } = require('../models')
 const { getOffset, getPagination } = require('../helpers/pagination-helper')
 const { Op } = require('sequelize')
-const { localFileHandler } = require('../helpers/file.helper')
+const { localFileHandler } = require('../helpers/file-helper')
 
 const userService = {
   signUp: (req, cb) => {

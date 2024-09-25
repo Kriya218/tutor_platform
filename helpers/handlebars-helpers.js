@@ -3,7 +3,8 @@ module.exports = {
     return a === b ? options.fn(this) : options.inverse(this)
   },
   isInclude: function (a, b) {
-    if (Array.isArray(a)) return a.includes(b) 
+    if (Array.isArray(a)) return a.includes(b)
+    if (a === b) return a.includes(b)
     return false
   }
 }

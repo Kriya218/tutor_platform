@@ -1,4 +1,5 @@
 const userService = require('../services/user-service')
+const getAvailableDate  = require('../helpers/time-helper')
 
 const userController = {
   signUpPage: (req, res) => {
@@ -53,7 +54,12 @@ const userController = {
         req.flash('status_code', err.status)
         res.redirect('/tutors')
       }
-      res.render('tutor-profile', data)
+
+      const opendays = 14
+      const courseDuration = data.user.tutorInfo.courseDuration
+      const days = data.user.tutorInfo.days
+      const availableTime = getAvailableDate(opendays, courseDuration, days)
+      res.render('tutor-profile', { data, availableTime})
     })
   },
   getTutorPage: (req, res, next) => {
