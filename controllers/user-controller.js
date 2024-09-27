@@ -54,12 +54,8 @@ const userController = {
         req.flash('status_code', err.status)
         res.redirect('/tutors')
       }
-
-      const opendays = 14
-      const courseDuration = data.user.tutorInfo.courseDuration
-      const days = data.user.tutorInfo.days
-      const availableTime = getAvailableDate(opendays, courseDuration, days)
-      res.render('tutor-profile', { data, availableTime})
+      
+      res.render('tutor-profile', { ...data })
     })
   },
   getTutorPage: (req, res, next) => {

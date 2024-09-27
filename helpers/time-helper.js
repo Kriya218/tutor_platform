@@ -1,32 +1,53 @@
 const dayjs = require('dayjs')
-const getAvailableDate = (opendays, courseDuration, days) => {
+
+function getAvailableDate (opendays, courseDuration, days, appointmentInfo) {
   const now = dayjs()
-  // get next 14 days date
-  const dateArr = Array.from({ length: opendays }, (_, i) => {
-    const date = now.add(i + 1, 'day')
-    return {
-      date: date.format("YYYY/MM/D"),
-      day: date.format("dddd").toLowerCase()
+  const availableSlots = []
+  Array.from({ length: opendays }, (_, i) => {
+    const currentDate = now.add(i + 1, 'day')
+    const dayOfWeek = currentDate.format('dddd')
+    
+    if (days.includes(dayOfWeek)) { 
+      const daySlots = getDaySlots(currentDate, courseDuration)
+      const filteredSlots = filterBookedSlots(currentDate, daySlots, appointmentInfo)
+
+      if (filteredSlots.length > 0) {
+        availableSlots.push({
+          date: currentDate.format('YYYY-MM-DD'),
+          dayOfWeek,
+          slots: filteredSlots
+        })
+      }
     }
   })
-  // filter tutor available date
-  const availableDate = dateArr.filter(date => days.includes(date.day))
+  return availableSlots
+}
 
-  // get time slot according course duration
-  const startTime = dayjs().set('hour', 18).set('minute', 0)
-  const endTime = dayjs().set('hour', 22).set('minute', 0)
-  const timeSlots = []
-  let currentTime = startTime
-  while(currentTime.isBefore(endTime)) {
-    const nextTime = currentTime.add(parseInt(courseDuration), 'minute')
-    if (nextTime.isBefore(endTime) || nextTime.isSame(endTime)) {
-      const slot = `${currentTime.format('HH:mm')} - ${nextTime.format('HH:mm')}`
-      timeSlots.push(slot)
-    }
-    currentTime = nextTime
+function getDaySlots(date, duration) {
+  const slots = []
+  let currentTime = date.hour(18).minute(0)
+  const endTime = date.hour(22).minute(0)
+  while(currentTime.add(parseInt(duration), 'minute').isBefore(endTime) || currentTime.add(parseInt(duration), 'minute').isSame(endTime)) {
+    slots.push({
+      start: currentTime.format('HH:mm'),
+      end: currentTime.format('HH:mm')
+    })
+    currentTime = currentTime.add(parseInt(duration), 'minute')
   }
-  
-  return availableDate.flatMap(date => timeSlots.map(slot => `${date.date} ${date.day} ${slot}`))
+  return slots
+}
+
+function filterBookedSlots(date, daySlots, appointments) {
+  const dateStr = date.format('YYYY-MM-DD')
+  return daySlots.filter(slot => {
+    const slotStart = dayjs(`${dateStr} ${slot.start}`)
+    const slotEnd = dayjs(`${dateStr} ${slot.end}`)
+    return !appointments.some(booked => {
+      const bookedStart = dayjs(`${booked.appointmentDate} ${booked.startTime}`)
+      const bookedEnd = dayjs(`${booked.appointmentDate} ${booked.endTime}`)
+      return slotEnd.isAfter(bookedStart) && slotStart.isBefore(bookedEnd)
+    })
+  })
 }
 
 module.exports = getAvailableDate

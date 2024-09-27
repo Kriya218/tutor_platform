@@ -34,11 +34,11 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     },
     totalStudyHours: {
-      type: DataTypes.NUMBER,
+      type: DataTypes.INTEGER,
       defaultValue: 0,
       allowNull: false
     },
-    tutorInfoId: DataTypes.NUMBER,
+    tutorInfoId: DataTypes.INTEGER,
     aboutMe: DataTypes.TEXT,
   }, {
     sequelize,

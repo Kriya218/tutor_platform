@@ -4,6 +4,7 @@ const router = express.Router()
 const passport = require('../config/passport')
 
 const userController = require('../controllers/user-controller')
+const appointmentController = require('../controllers/appointment-controller')
 
 const { authenticated } = require('../middlewares/auth')
 const upload = require('../middlewares/multer')
@@ -22,6 +23,9 @@ router.get('/oauth/redirect/google', passport.authenticate('google', {
   failureFlash: true
 }), userController.signIn)
 router.get('/logout', userController.logout)
+
+// router.get('/appointments/:id/result', authenticated, appointmentController.getAppointmentResult)
+// router.post('/appointments/:id', authenticated, appointmentController.postAppointment)
 
 router.get('/tutors/apply', authenticated, userController.getApplyPage)
 router.post('/tutors/apply', authenticated, userController.tutorApply)
