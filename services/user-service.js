@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs')
 const { User, Tutor_info, Appointment } = require('../models')
 const { getOffset, getPagination } = require('../helpers/pagination-helper')
 const { localFileHandler } = require('../helpers/file-helper')
-const getAvailableDate  = require('../helpers/time-helper')
+const { getAvailableDate }  = require('../helpers/time-helper')
 
 const userService = {
   signUp: (req, cb) => {
@@ -101,32 +101,32 @@ const userService = {
   getTutorProfile: (req, cb) => {
     const tutorId = req.params.id
     // const { appointmentDate = '', courseTime = '' } = req.body || {}
-    return User.findByPk(tutorId, {
+    // return User.findByPk(tutorId, {
+    //     attributes: ['id', 'name', 'image', 'tutor_info_id', 'role', 'aboutMe'],
+    //     include: [{ model: Tutor_info, as: 'tutorInfo' }],
+    //     raw: true,
+    //     nest: true
+    //   })
+    
+    return Promise.all([
+      User.findByPk(tutorId, {
         attributes: ['id', 'name', 'image', 'tutor_info_id', 'role', 'aboutMe'],
         include: [{model: Tutor_info, as: 'tutorInfo'}],
         raw: true,
         nest: true
+      }),
+      Appointment.findAll({
+        where: { tutorId },
+        attributes: ['appointmentDate', 'startTime', 'endTime'],
+        raw: true
       })
+    ])
     
-    // return Promise.all([
-    //   User.findByPk(tutorId, {
-    //     attributes: ['id', 'name', 'image', 'tutor_info_id', 'role', 'aboutMe'],
-    //     include: [{model: Tutor_info, as: 'tutorInfo'}],
-    //     raw: true,
-    //     nest: true
-    //   }),
-    //   Appointment.findAll({
-    //     where: { tutorId, appointmentDate },
-    //     attributes: ['appointmentDate', 'startTime', 'endTime'],
-    //     raw: true
-    //   })
-    // ])
-    
-      .then((user) => {
+      .then(([user, appointment]) => {
         const opendays = 14
         const courseDuration = user.tutorInfo.courseDuration
         const days = user.tutorInfo.days
-        const availableTimeSlots = getAvailableDate(opendays, courseDuration, days, [])
+        const availableTimeSlots = getAvailableDate(opendays, courseDuration, days, appointment)
         
         if (!user) {
           const err = new Error('使用者不存在')
@@ -138,10 +138,12 @@ const userService = {
           err.status = 403
           throw err
         }
-        console.log('availableTimeSlots:', availableTimeSlots)
         cb(null, { user, availableTimeSlots:JSON.stringify(availableTimeSlots) })
       })
-      .catch(err => cb(err))
+      .catch(err => {
+        console.error('Error getProfile:', err)
+        return cb(err)
+      })
   },
   getTutorPage: (req, cb) => {
     return User.findByPk(req.user.id, {

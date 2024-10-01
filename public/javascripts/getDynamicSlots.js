@@ -18,7 +18,7 @@ export function getDynamicSlots (timeSlots) {
     if (selectedDateSlots) {
       selectedDateSlots.slots.forEach(timeSlot => {
         const option = document.createElement('option')
-        option.value = timeSlot.start - timeSlot.end
+        option.value = `${timeSlot.start} - ${timeSlot.end}`
         option.textContent = `${timeSlot.start} - ${timeSlot.end}`
         timeSelect.appendChild(option)
       }

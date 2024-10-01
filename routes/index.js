@@ -25,7 +25,7 @@ router.get('/oauth/redirect/google', passport.authenticate('google', {
 router.get('/logout', userController.logout)
 
 // router.get('/appointments/:id/result', authenticated, appointmentController.getAppointmentResult)
-// router.post('/appointments/:id', authenticated, appointmentController.postAppointment)
+router.post('/appointments/:id', authenticated, upload.none(), appointmentController.postAppointment)
 
 router.get('/tutors/apply', authenticated, userController.getApplyPage)
 router.post('/tutors/apply', authenticated, userController.tutorApply)

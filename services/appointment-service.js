@@ -1,33 +1,60 @@
-const { Appointment } = require('../models')
-// const { isOverlap } = require('../helpers/time-helper')
+const { User, Tutor_info, Appointment } = require('../models')
+const { isOverlap } = require('../helpers/time-helper')
 
 const appointmentService = {
   postAppointment: (req, cb) => {
     const { appointmentDate, courseTime } = req.body
-    // const reqStartTime = courseTime.match(/(\d{2}:\d{2})/g)[0]
-    // const reqEndTime = courseTime.match(/(\d{2}:\d{2})/g)[1]
-    return Appointment.findAll({
-      where: { tutorId: req.params.id, appointmentDate },
-      attributes: ['id', 'appointmentDate', 'startTime', 'endTime'],
-      raw: true
-    })
-      .then(appointment => {
-        if (isOverlap(reqStartTime, reqEndTime, appointment.startTime, appointment.endTime)) {
-          const result_msg = '時段已無法預約，請選擇其他時段'
-          return cb(null, { result_msg, reqStartTime, reqEndTime })
-        }
+    const [reqStartTime, reqEndTime] = courseTime.match(/(\d{2}:\d{2})/g)
+
+    return Promise.all([
+      Appointment.findAll({
+        where: { tutorId: req.params.id, appointmentDate },
+        attributes: ['id', 'appointmentDate', 'startTime', 'endTime'],
+        raw: true
+      }),
+      User.findByPk(req.params.id, {
+        attributes:['id', 'role', 'name', 'tutorInfoId'],
+        include: [
+          { 
+            model: Tutor_info,
+            as: 'tutorInfo',
+            attributes: ['id', 'courseName', 'meetingLink'],
+          }
+        ],
+        raw: true,
+        nest: true
+      })
+    ]) 
+    
+      .then(([appointment, user]) => {
+        const isTimeConflict = appointment.some(book => 
+          isOverlap(reqStartTime, reqEndTime, book.startTime, book.endTime, book.appointmentDate)
+        )
+        if (user.role !== 'tutor' || !user) throw new Error('教師不存在')
+        if (isTimeConflict) return cb(null, { courseTime, fail: true })
+        
+        const { name: tutorName } = user
+        const { courseName, meetingLink } = user.tutorInfo
+
         return Appointment.create({
           studentId: req.user.id,
-          tutorId: req.params.id,
+          tutorId: user.id,
           appointmentDate,
           startTime: reqStartTime,
-          endTime: reqEndTime,
-          status: 'booked'
+          endTime: reqEndTime
         })
+          .then(appointment => cb(null, {
+            appointment: appointment.toJSON(),
+            tutorName,
+            courseName,
+            meetingLink
+          }))
       })
-      .then(appointment => cb(null, appointment))
-      .catch(err => cb(err))
+      .catch(err => {
+        console.error('Error creating appointment:', err)
+        return cb(err)
+      })
   }
 }
 
-// module.exports = appointmentService
+module.exports = appointmentService

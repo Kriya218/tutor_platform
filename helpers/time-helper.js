@@ -30,7 +30,7 @@ function getDaySlots(date, duration) {
   while(currentTime.add(parseInt(duration), 'minute').isBefore(endTime) || currentTime.add(parseInt(duration), 'minute').isSame(endTime)) {
     slots.push({
       start: currentTime.format('HH:mm'),
-      end: currentTime.format('HH:mm')
+      end: currentTime.add(parseInt(duration), 'minute').format('HH:mm')
     })
     currentTime = currentTime.add(parseInt(duration), 'minute')
   }
@@ -43,11 +43,17 @@ function filterBookedSlots(date, daySlots, appointments) {
     const slotStart = dayjs(`${dateStr} ${slot.start}`)
     const slotEnd = dayjs(`${dateStr} ${slot.end}`)
     return !appointments.some(booked => {
-      const bookedStart = dayjs(`${booked.appointmentDate} ${booked.startTime}`)
-      const bookedEnd = dayjs(`${booked.appointmentDate} ${booked.endTime}`)
+      const date = dayjs(booked.appointmentDate).format('YYYY-MM-DD')
+      const bookedStart = dayjs(`${date} ${booked.startTime}`)
+      const bookedEnd = dayjs(`${date} ${booked.endTime}`)
       return slotEnd.isAfter(bookedStart) && slotStart.isBefore(bookedEnd)
     })
   })
 }
 
-module.exports = getAvailableDate
+function isOverlap(st1, et1, st2, et2, date) {
+  const [startTime1, endTime1, startTime2, endTime2] = [dayjs(`${date} ${st1}`), dayjs(`${date} ${et1}`), dayjs(`${date} ${st2}`), dayjs(`${date} ${et2}`)]
+  return endTime1.isAfter(startTime2) && startTime1.isBefore(endTime2)
+}
+
+module.exports = { getAvailableDate, isOverlap }

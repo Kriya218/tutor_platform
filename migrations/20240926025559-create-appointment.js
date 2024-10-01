@@ -11,11 +11,21 @@ module.exports = {
       },
       student_id: {
         type: Sequelize.INTEGER,
-        allowNull: false
+        references: {
+          model: 'Users',
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'SET NULL'
       },
       tutor_id: {
         type: Sequelize.INTEGER,
-        allowNull: false
+        references: {
+          model: 'Users',
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'SET NULL'
       },
       appointment_date: {
         type: Sequelize.DATEONLY,
@@ -34,11 +44,11 @@ module.exports = {
         defaultValue: 'booked',
         allowNull: false
       },
-      createdAt: {
+      created_at: {
         allowNull: false,
         type: Sequelize.DATE
       },
-      updatedAt: {
+      updated_at: {
         allowNull: false,
         type: Sequelize.DATE
       }
