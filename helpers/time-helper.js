@@ -56,4 +56,10 @@ function isOverlap(st1, et1, st2, et2, date) {
   return endTime1.isAfter(startTime2) && startTime1.isBefore(endTime2)
 }
 
-module.exports = { getAvailableDate, isOverlap }
+function isFinished(date, time) {
+  const now = dayjs()
+  const courseEndTime = dayjs(`${date} ${time}`)
+  return now.isAfter(courseEndTime)
+}
+
+module.exports = { getAvailableDate, isOverlap, isFinished }

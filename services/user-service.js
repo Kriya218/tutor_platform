@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs')
 const { User, Tutor_info, Appointment } = require('../models')
 const { getOffset, getPagination } = require('../helpers/pagination-helper')
 const { localFileHandler } = require('../helpers/file-helper')
-const { getAvailableDate }  = require('../helpers/time-helper')
+const { getAvailableDate, isFinished }  = require('../helpers/time-helper')
 
 const userService = {
   signUp: (req, cb) => {
@@ -239,22 +239,29 @@ const userService = {
           raw: true,
           nest: true
         }],
-        limit: 4,
+
         order: [['appointmentDate'], ['startTime']],
         raw: true,
         nest: true
       })
     ])
-    
       .then(([user, appointments]) => {
+        const bookedCourses = []
+        const finishedCourses = []
         if (!user) throw new Error('此用戶不存在')
         if (user.role === 'tutor') {
           const err = new Error('此頁面不存在')
           err.status = 404
           throw err
         }
-        console.log('Appointments:', appointments)
-        cb(null, { user, userId, appointments })
+        appointments.forEach(appointment => {
+          if(isFinished(appointment.appointmentDate, appointment.endTime)) {
+            finishedCourses.push(appointment)
+          } else {
+            bookedCourses.push(appointment)
+          }
+        })
+        cb(null, { user, userId, appointments: bookedCourses, finishedCourses })
       })
       .catch(err => cb(err))
   },

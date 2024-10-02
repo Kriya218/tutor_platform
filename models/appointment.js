@@ -12,9 +12,14 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       Appointment.belongsTo(models.User, { foreignKey: 'tutorId', as: 'tutor' })
       Appointment.belongsTo(models.User, { foreignKey: 'studentId', as: 'student' })
+      Appointment.hasOne(models.Feedback, { foreignKey: 'appointment_id', as:'feedback' })
     }
   }
   Appointment.init({
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true
+    },
     studentId: {
       type: DataTypes.INTEGER,
       allowNull: false

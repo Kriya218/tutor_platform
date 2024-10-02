@@ -1,5 +1,4 @@
 const userService = require('../services/user-service')
-const getAvailableDate  = require('../helpers/time-helper')
 
 const userController = {
   signUpPage: (req, res) => {

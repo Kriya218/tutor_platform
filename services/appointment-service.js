@@ -1,5 +1,7 @@
-const { User, Tutor_info, Appointment } = require('../models')
+const { User, Tutor_info, Appointment, Feedback } = require('../models')
 const { isOverlap } = require('../helpers/time-helper')
+const { where } = require('sequelize')
+const feedback = require('../models/feedback')
 
 const appointmentService = {
   postAppointment: (req, cb) => {
@@ -54,6 +56,38 @@ const appointmentService = {
         console.error('Error creating appointment:', err)
         return cb(err)
       })
+  },
+  postFeedback: (req, cb) => {
+    const { rating, description } = req.body
+    return Promise.all([
+      Feedback.findOne({
+        where: { appointmentId: req.params.id },
+      }),
+      Appointment.findOne({
+        where: { id: req.params.id },
+        include: [{
+          model: User,
+          attributes: ['id', 'name'],
+          as: 'tutor'
+        }],
+        nest: true
+      })
+    ])
+      .then(([feedback, appointment]) => {
+        if (feedback) throw new Error('此次課程已提交過回饋')
+        if (req.user.id !== appointment.studentId) throw new Error('無回饋權限')
+        appointment.update({ status: 'completed' })
+        return Feedback.create({
+          appointmentId: req.params.id,
+          rating,
+          description
+        })
+          .then(feedback => cb(null, {
+            feedback: feedback.toJSON(),
+            tutorName: appointment.tutor.name
+          }))
+      })
+      .catch(err => cb(err))
   }
 }
 

@@ -34,12 +34,61 @@
         {{/each}}
       </div>
       <h6>待評分課程</h6>
+      <div class="row">
+        {{#each finishedCourses}}
+        <div class="col-md-6">
+          <div class="card m-2 tutor-card px-0">
+            <div class="card-body">
+              <div class="row">
+                <div class="d-flex">
+                  <div class="col-md-2"><img src="{{this.tutor.image}}" class="index-img" style="width: 100%;" alt="tutor-photo"></div>
+                  <div class="ms-3 flex-column my-auto">                   
+                    <ul>
+                      <li>{{this.tutor.name}} 老師</li>
+                      <li>預約日期: {{this.appointmentDate}}</li>
+                      <li>上課時段: {{this.startTime}} - {{this.endTime}}</li>
+                    </ul>              
+                  </div>
+                </div>
+                <form action="/feedbacks/{{this.id}}" method="post" class="mt-3" id="feedback-{{this.id}}">
+                  <div class="row g-3 align-items-center mb-3">
+                    <div class="col-md-3 d-flex justify-content-center">
+                      <label for="rating" class="col-form-label">課程評分</label>
+                    </div>
+                    <div class="col-md-7">
+                      <input type="number" id="rating" class="form-control" name="rating" min="0" max="10" step="0.1">
+                    </div>                  
+                  </div>
+                  <div class="row g-3 align-items-center">
+                    <div class="col-md-3 d-flex justify-content-center">
+                      <label for="description" class="col-form-label">課程回饋</label>
+                    </div>
+                    <div class="col-md-7">
+                      <textarea class="form-control form-control-sm" id="description" name="description"></textarea>
+                    </div>
+                  </div>
+                  <button type="submit" class="btn button d-flex mx-auto mt-3 feedback-btn" data-id="{{this.id}}">送出回饋</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+        {{/each}}
+      </div>
+        
       <h6>學習累積時數排行名次</h6>
       {{#ifCond user.id userId}}
-      <div class="col-md-auto">
+      <div class="col-md-auto mb-5">
         <a href="/user/{{user.id}}/edit" class="btn mt-4" style="background-color: #708c69; color:white;">編輯個人資料</a>
       </div>
       {{/ifCond}}
     </div>
   </div>
 </div>
+
+{{>appointment-result-modal}}
+
+<script type="module">
+  import { feedbackResult } from '/javascripts/feedbackResult.js'
+  feedbackResult('{{{user.id}}}')
+</script>

@@ -24,6 +24,18 @@ const appointmentController = {
       }
     })
 
+  },
+  postFeedback: (req, res, next) => {
+    appointmentService.postFeedback(req, (err, data) => {
+      console.log('feedback:', data)
+      if (err) next(err)
+      res.json({
+        success: true,
+        tutorName: data.tutorName,
+        rating: data.feedback.rating,
+        description: data.feedback.description
+      })
+    })
   }
 }
 

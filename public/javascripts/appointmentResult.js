@@ -2,16 +2,18 @@
 export function appointmentResult(tutorId) {
   document.getElementById('appointmentForm').addEventListener('submit', evt => {
     evt.preventDefault()
-    const formData = new FormData(evt.target)
+    const formData = new URLSearchParams(new FormData(evt.target))
     const appointmentDate = formData.get('appointmentDate')
     const courseTime = formData.get('courseTime')
     fetch(`/appointments/${tutorId}`, {
       method: 'POST',
-      body: formData
+      headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: formData.toString()
     })
       .then(response => response.json())
       .then(data => {
-        console.log('FE data:', data)
         if (data.success) {
           const appointmentDate = new Date(data.appointmentDate);
           const formattedDate = appointmentDate.toISOString().slice(0, 10)
