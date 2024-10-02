@@ -70,7 +70,7 @@ const userController = {
         req.flash('status_code', err.status)
         res.redirect('/tutors')
       }
-      return res.render('tutor', data)
+      return res.render('tutor', {...data})
     })
   },
   editTutor: (req, res, next) => {
@@ -90,7 +90,7 @@ const userController = {
         req.flash('status_code', err.status)
         return res.redirect('/tutors')
       }
-      res.render('student', data)
+      res.render('student', {...data})
     })
   },
   editUser: (req, res, next) => {

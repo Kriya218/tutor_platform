@@ -108,3 +108,9 @@ h2 {
 .apply-form .form-label {
   font-weight: 600;
 }
+
+.std-page h6 {
+  font-weight: 600;
+  background-color: #fcf3e3;
+  display: inline;
+}

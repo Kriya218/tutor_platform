@@ -9,12 +9,36 @@
       <h6 style="font-weight: 600;">自我介紹</h6>
       <p>{{user.aboutMe}}</p>
     </div>
-    <div class="col-md-9">
+    <div class="col-md-9 std-page">
       <h6>Course Appointments</h6>
+      <div class="row">
+        {{#each appointments}}
+          <div class="col-md-6">
+            <div class="card m-2 tutor-card px-0">
+              <div class="card-body">
+                <div class="d-flex">
+                  <div class="col-md-2"><img src="{{this.tutor.image}}" class="index-img" style="width: 100%;" alt="tutor-photo"></div>
+                  <div class="ms-3 flex-column">
+                    <ul>
+                      <li><strong>{{this.tutor.tutorInfo.courseName}}</strong></li>
+                      <li>{{this.tutor.name}} 老師</li>
+                      <li>預約日期: {{this.appointmentDate}}</li>
+                      <li>上課時段: {{this.startTime}} - {{this.endTime}}</li>
+                      <li>課程連結: <a href="{{this.tutor.tutorInfo.meetingLink}}">{{this.tutor.tutorInfo.meetingLink}}</a></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        {{/each}}
+      </div>
       <h6>待評分課程</h6>
       <h6>學習累積時數排行名次</h6>
       {{#ifCond user.id userId}}
-      <a href="/user/{{user.id}}/edit" class="btn mt-4" style="background-color: #708c69; color:white;">編輯個人資料</a>
+      <div class="col-md-auto">
+        <a href="/user/{{user.id}}/edit" class="btn mt-4" style="background-color: #708c69; color:white;">編輯個人資料</a>
+      </div>
       {{/ifCond}}
     </div>
   </div>

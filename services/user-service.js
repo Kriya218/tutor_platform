@@ -100,13 +100,6 @@ const userService = {
   },
   getTutorProfile: (req, cb) => {
     const tutorId = req.params.id
-    // const { appointmentDate = '', courseTime = '' } = req.body || {}
-    // return User.findByPk(tutorId, {
-    //     attributes: ['id', 'name', 'image', 'tutor_info_id', 'role', 'aboutMe'],
-    //     include: [{ model: Tutor_info, as: 'tutorInfo' }],
-    //     raw: true,
-    //     nest: true
-    //   })
     
     return Promise.all([
       User.findByPk(tutorId, {
@@ -146,22 +139,36 @@ const userService = {
       })
   },
   getTutorPage: (req, cb) => {
-    return User.findByPk(req.user.id, {
-      attributes: ['id', 'name', 'image', 'role', 'tutor_info_id', 'aboutMe'],
-      include:[{ 
-        model: Tutor_info,
-        as: 'tutorInfo'
-      }],
-      raw: true,
-      nest: true
-    })
-      .then(user => {
+    return Promise.all([
+      User.findByPk(req.user.id, {
+        attributes: ['id', 'name', 'image', 'role', 'tutor_info_id', 'aboutMe'],
+        include:[{ 
+          model: Tutor_info,
+          as: 'tutorInfo'
+        }],
+        raw: true,
+        nest: true
+      }),
+      Appointment.findAll({
+        where:{tutorId: req.user.id},
+        include: [{
+          model: User,
+          as: 'student',
+          attributes: ['id', 'name']
+        }],
+        order: [['appointmentDate'], ['startTime']],
+        limit: 6,
+        raw: true,
+        nest: true
+      })
+    ])
+      .then(([user, appointments]) => {
         if (user.role !== 'tutor') {
           const err = new Error('身分非老師無法檢視')
           err.status = 403
           throw err
         }
-        cb(null, { user })
+        cb(null, { user, appointments })
       })
       .catch(err => cb(err))
   },
@@ -212,19 +219,42 @@ const userService = {
   getUser: (req, cb) => {
     const userId = req.user.id
 
-    return User.findByPk(req.params.id, { 
-      attributes: ['id', 'name', 'image', 'role', 'aboutMe'],
-      raw: true 
-    })
-      .then(user => {
+    return Promise.all([
+      User.findByPk(req.params.id, { 
+        attributes: ['id', 'name', 'image', 'role', 'aboutMe'],
+        raw: true 
+      }),
+      Appointment.findAll({
+        where: {studentId: req.params.id, status:'booked'},
+        include: [{ 
+          model: User,
+          as: 'tutor',
+          attributes: ['id', 'name', 'image', 'tutorInfoId'],
+          include: [{
+            model: Tutor_info,
+            attributes: ['id', 'courseName', 'meetingLink'],
+            as: 'tutorInfo',
+            raw: true
+          }],
+          raw: true,
+          nest: true
+        }],
+        limit: 4,
+        order: [['appointmentDate'], ['startTime']],
+        raw: true,
+        nest: true
+      })
+    ])
+    
+      .then(([user, appointments]) => {
         if (!user) throw new Error('此用戶不存在')
         if (user.role === 'tutor') {
           const err = new Error('此頁面不存在')
           err.status = 404
           throw err
         }
-        
-        cb(null, { user, userId })
+        console.log('Appointments:', appointments)
+        cb(null, { user, userId, appointments })
       })
       .catch(err => cb(err))
   },
@@ -261,29 +291,3 @@ const userService = {
 }
 
 module.exports = userService
-
-
-
-//  getTutorProfile: (req, cb) => {
-//     const tutorId = req.params.id
-//     return User.findByPk(tutorId, {
-//       attributes: ['id', 'name', 'image', 'tutor_info_id', 'role', 'aboutMe'],
-//       include: [{model: Tutor_info, as: 'tutorInfo'}],
-//       raw: true,
-//       nest: true
-//     })
-//       .then(user => {
-//         if (!user) {
-//           const err = new Error('使用者不存在')
-//           err.status = 404
-//           throw err
-//         }
-//         if (user.role !== 'tutor') {
-//           const err = new Error('使用者身分非老師')
-//           err.status = 403
-//           throw err
-//         }
-//         cb(null, { user })
-//       })
-//       .catch(err => cb(err))
-//   },

@@ -11,6 +11,22 @@
     </div>
     <div class="col-md-9">
       <h6>Course Appointments</h6>
+        <div class="row">
+          {{#each appointments}}
+          <div class="col-md-4 ">
+            <div class="card m-2 tutor-card px-0">
+              <div class="card-body">
+                <ul>
+                  <li>學生: {{this.student.name}}</li>
+                  <li>課程時間:</li>
+                  <li>{{this.appointmentDate}} </li>
+                  <li>{{this.startTime}} - {{this.endTime}}</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          {{/each}}
+        </div>
       <h6>教學風格</h6>
       <p>{{user.tutorInfo.teachingStyle}}</p>
       <h6>學生回饋</h6>
