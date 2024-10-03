@@ -9,7 +9,7 @@
           <h3 class="my-3">{{user.tutorInfo.courseName}}</h3>
           <ul>
             <li>{{user.name}} 老師</li>
-            <li><i class="fa-solid fa-star me-1" style="color: #f4a258;"></i>評分</li>
+            <li>{{ratingAvg}}<i class="fa-solid fa-star ms-1" style="color: #f4a258;"></i></li>
             </ui>
         </div>
       </div>
@@ -21,6 +21,17 @@
         <p>{{user.tutorInfo.teachingStyle}}</p>
         <h5>課程內容</h5>
         <p>{{user.tutorInfo.introduction}}</p>
+        <h5>課程回饋</h5>
+          {{#each orderedFeedbacks}}
+            <div class="d-flex mt-2">
+              <div class="col-md-1">
+                {{this.feedback.rating}} <i class="fa-solid fa-star me-3" style="color: #f4a258;"></i>
+              </div>
+              <div>
+                {{this.feedback.description}}
+              </div>
+            </div>
+          {{/each}}
       </div>
     </div>
     

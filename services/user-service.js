@@ -1,9 +1,11 @@
 const { Op } = require('sequelize')
 const bcrypt = require('bcryptjs')
-const { User, Tutor_info, Appointment } = require('../models')
+const dayjs = require('dayjs')
+const { User, Tutor_info, Appointment, Feedback } = require('../models')
 const { getOffset, getPagination } = require('../helpers/pagination-helper')
 const { localFileHandler } = require('../helpers/file-helper')
 const { getAvailableDate, isFinished }  = require('../helpers/time-helper')
+const { getAvg } = require('../helpers/calculate-helper')
 
 const userService = {
   signUp: (req, cb) => {
@@ -100,7 +102,7 @@ const userService = {
   },
   getTutorProfile: (req, cb) => {
     const tutorId = req.params.id
-    
+    const now = dayjs()
     return Promise.all([
       User.findByPk(tutorId, {
         attributes: ['id', 'name', 'image', 'tutor_info_id', 'role', 'aboutMe'],
@@ -109,18 +111,64 @@ const userService = {
         nest: true
       }),
       Appointment.findAll({
-        where: { tutorId },
+        where: { 
+          tutorId, 
+          status:'booked',
+          [Op.or]: [
+            { appointmentDate: { [Op.gt]: now.format('YYYY-MM-DD') } },
+            { appointmentDate: now.format('YYYY-MM-DD'), startTime: { [Op.gt]: now.format('HH:mm') } }
+          ]
+        },
         attributes: ['appointmentDate', 'startTime', 'endTime'],
         raw: true
+      }),
+      Appointment.findAll({
+        where: { tutorId, status:'completed' },
+        attributes: ['id'],
+        include: [{
+          model: Feedback,
+          as: 'feedback',
+          attributes: [ 'rating', 'description'],
+        }],
+        order: [[{ model: Feedback, as: 'feedback' }, 'rating', 'DESC']],
+        limit:2,
+        raw: true,
+        nest: true
+      }),
+      Appointment.findAll({
+        where: { tutorId, status:'completed' },
+        attributes: ['id'],
+        include: [{
+          model: Feedback,
+          as: 'feedback',
+          attributes: ['rating', 'description'],          
+        }],
+        order: [[{ model: Feedback, as: 'feedback' }, 'rating']],
+        limit:2,
+        raw: true,
+        nest: true
+      }),
+      Appointment.findAll({
+        where: { tutorId, status:'completed' },
+        attributes: ['id'],
+        include: [{
+          model: Feedback,
+          as: 'feedback',
+          attributes: ['rating'],          
+        }],
+        raw: true,
+        nest: true
       })
     ])
     
-      .then(([user, appointment]) => {
+      .then(([user, appointment, feedbackH, feedbackL, ratings]) => {
         const opendays = 14
         const courseDuration = user.tutorInfo.courseDuration
         const days = user.tutorInfo.days
         const availableTimeSlots = getAvailableDate(opendays, courseDuration, days, appointment)
-        
+        const orderedFeedbacks = [...feedbackH, ...feedbackL]
+        const ratingArr = ratings.map(rating => rating.feedback.rating)
+        const ratingAvg = Math.round(getAvg(ratingArr) * 10) / 10
         if (!user) {
           const err = new Error('使用者不存在')
           err.status = 404
@@ -131,7 +179,7 @@ const userService = {
           err.status = 403
           throw err
         }
-        cb(null, { user, availableTimeSlots:JSON.stringify(availableTimeSlots) })
+        cb(null, { user, availableTimeSlots:JSON.stringify(availableTimeSlots), orderedFeedbacks, ratingAvg })
       })
       .catch(err => {
         console.error('Error getProfile:', err)
@@ -150,7 +198,7 @@ const userService = {
         nest: true
       }),
       Appointment.findAll({
-        where:{tutorId: req.user.id},
+        where:{tutorId: req.user.id, status: 'booked'},
         include: [{
           model: User,
           as: 'student',
@@ -160,15 +208,46 @@ const userService = {
         limit: 6,
         raw: true,
         nest: true
+      }),
+      Appointment.findAll({
+        where: {tutorId: req.user.id, status: 'completed'},
+        attributes: ['id', 'studentId'],
+        include: [
+          {
+          model: User,
+          as: 'student',
+          attributes: ['id', 'name'],
+          },
+          {
+            model: Feedback,
+            as: 'feedback',
+            attributes: ['appointmentId', 'rating', 'description'],
+          }
+        ],
+        raw: true,
+        nest: true
+      }),
+      Appointment.findAll({
+        where: { tutorId: req.user.id, status:'completed' },
+        attributes: ['id'],
+        include: [{
+          model: Feedback,
+          as: 'feedback',
+          attributes: ['rating'],          
+        }],
+        raw: true,
+        nest: true
       })
     ])
-      .then(([user, appointments]) => {
+      .then(([user, appointments, feedbacks, ratings]) => {
+        const ratingArr = ratings.map(rating => rating.feedback.rating)
+        const ratingAvg = Math.round(getAvg(ratingArr) * 10) / 10
         if (user.role !== 'tutor') {
           const err = new Error('身分非老師無法檢視')
           err.status = 403
           throw err
         }
-        cb(null, { user, appointments })
+        cb(null, { user, appointments, feedbacks, ratingAvg })
       })
       .catch(err => cb(err))
   },

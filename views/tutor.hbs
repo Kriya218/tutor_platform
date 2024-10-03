@@ -5,11 +5,11 @@
     <div class="col-md-3">
       <img src="{{user.image}}" class="profile-img" style="width: 70%;" alt="profile-photo">
       <h3 class="mt-5">{{user.name}}</h3>
-      <p>評分</p>
+      <p>{{ratingAvg}}<i class="fa-solid fa-star ms-1" style="color: #f4a258;"></i></p>
       <h6 style="font-weight: 600;">自我介紹</h6>
       <p>{{user.aboutMe}}</p>
     </div>
-    <div class="col-md-9">
+    <div class="col-md-9 personal-page">
       <h6>Course Appointments</h6>
         <div class="row">
           {{#each appointments}}
@@ -30,7 +30,22 @@
       <h6>教學風格</h6>
       <p>{{user.tutorInfo.teachingStyle}}</p>
       <h6>學生回饋</h6>
-      <a href="/tutors/{{user.id}}/edit" class="btn mt-4" style="background-color: #708c69; color:white;">編輯資料或可預約時段</a>
+        <div class="row">
+          {{#each feedbacks}}
+            <div class="col-md-4 ">
+              <div class="card m-2 tutor-card px-0">
+                <div class="card-body">
+                  <ul>
+                    <li>學生: {{this.student.name}}</li>
+                    <li>評分: {{this.feedback.rating}}</li>
+                    <li>回饋: {{this.feedback.description}} </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          {{/each}}
+        </div>
+      <a href="/tutors/{{user.id}}/edit" class="btn my-4" style="background-color: #708c69; color:white;">編輯資料或可預約時段</a>
     </div>
   </div>
 </div>
