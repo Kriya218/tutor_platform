@@ -53,19 +53,19 @@
   </div>
   <div class="col-md-2 st-rank">
     <h4 class="d-flex justify-content-center" style="color: #708c69; font-weight:500"><i class="fa-solid fa-crown me-2"></i>學習時數排行</h4>
-      {{#each students}}
-      <div class="card m-2 " >
-        <div class="card-body p-1">
-          <div class="d-flex">
-            <img src="{{this.image}}" class="col-md-4 index-img" alt="student-photo">
-            <div class="flex-col ms-2">
-              <h6 class="card-title">{{this.name}}</h6>
-              <p>{{this.totalStudyHours}} 小時</p>
+      {{#each rankings}}
+        <div class="card m-2 " >
+          <div class="card-body p-1">
+            <div class="d-flex">
+              <img src="{{this.student.image}}" class="col-md-4 index-img" alt="student-photo">
+              <div class="flex-col ms-2">
+                <h6 class="card-title">{{this.student.name}}</h6>
+                <p>{{this.totalDuration}} 小時</p>
+              </div>
             </div>
+            
           </div>
-          
         </div>
-      </div>
       {{/each}}
     </div>
 </div>

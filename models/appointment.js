@@ -44,7 +44,8 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.ENUM('booked', 'completed'),
       defaultValue: 'booked',
       allowNull: false
-    }
+    },
+    courseDuration: DataTypes.FLOAT
   }, {
     sequelize,
     modelName: 'Appointment',

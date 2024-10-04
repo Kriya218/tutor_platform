@@ -6,6 +6,7 @@ const { getOffset, getPagination } = require('../helpers/pagination-helper')
 const { localFileHandler } = require('../helpers/file-helper')
 const { getAvailableDate, isFinished }  = require('../helpers/time-helper')
 const { getAvg } = require('../helpers/calculate-helper')
+const { rankingService } = require('../services/rankingService')
 
 const userService = {
   signUp: (req, cb) => {
@@ -34,43 +35,36 @@ const userService = {
         { '$user.name$': { [Op.like]: `%${keywords}%` } }
       ]
     } : {}
-    return Promise.all([
-      Tutor_info.findAndCountAll({
-        attributes: ['id', 'courseName', 'introduction'],
-        where: whereCond,
-        include: [{ 
-          model: User, 
-          as: 'user',
-          attributes: ['id', 'name', 'image', 'tutor_info_id']
-        }],
-        limit: limit,
-        offset: getOffset(limit, page),
-        raw: true,
-        nest: true
-      }),
-      User.findAll({
-        where: { role: 'student' },
-        attributes: ['id', 'name', 'image', 'totalStudyHours'],
-        limit: 8,
-        order: [['totalStudyHours', 'DESC']],
-        raw: true
-      })
-    ])
-    
-      .then(([tutorInfos, students]) => {
+    return Tutor_info.findAndCountAll({
+      attributes: ['id', 'courseName', 'introduction'],
+      where: whereCond,
+      include: [{ 
+        model: User, 
+        as: 'user',
+        attributes: ['id', 'name', 'image', 'tutor_info_id']
+      }],
+      limit: limit,
+      offset: getOffset(limit, page),
+      raw: true,
+      nest: true
+    })    
+      .then(tutorInfos => {
         const { id, name, role } = req.user
         const tutors = tutorInfos.rows
           .map(tutorInfo => ({
             ...tutorInfo,
             introduction: tutorInfo.introduction ? tutorInfo.introduction.substring(0, 60) : ''
         }))
-        return cb(null, { 
-          id, 
-          name, 
-          role, 
-          tutors, 
-          students,
-          pagination: getPagination(limit, page, tutorInfos.count)
+        rankingService.getStudentRankings(8 , null, (err, rankings) => {
+          if (err) throw new Error(err)
+          return cb (null, {
+            id, 
+            name, 
+            role, 
+            tutors,
+            pagination: getPagination(limit, page, tutorInfos.count),
+            rankings
+          })
         })
       })
       .catch(err => cb(err))
@@ -297,7 +291,6 @@ const userService = {
   },
   getUser: (req, cb) => {
     const userId = req.user.id
-
     return Promise.all([
       User.findByPk(req.params.id, { 
         attributes: ['id', 'name', 'image', 'role', 'aboutMe'],
@@ -340,7 +333,16 @@ const userService = {
             bookedCourses.push(appointment)
           }
         })
-        cb(null, { user, userId, appointments: bookedCourses, finishedCourses })
+        rankingService.getStudentRankings(8 , req.params.id, (err, rankings) => {
+          if (err) throw new Error(err)
+          return cb (null, {
+            user,
+            userId,
+            appointments: bookedCourses,
+            finishedCourses,
+            rankings
+          })
+        })
       })
       .catch(err => cb(err))
   },

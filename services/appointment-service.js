@@ -20,7 +20,7 @@ const appointmentService = {
           { 
             model: Tutor_info,
             as: 'tutorInfo',
-            attributes: ['id', 'courseName', 'meetingLink'],
+            attributes: ['id', 'courseName', 'meetingLink', 'courseDuration'],
           }
         ],
         raw: true,
@@ -36,14 +36,16 @@ const appointmentService = {
         if (isTimeConflict) return cb(null, { courseTime, fail: true })
         
         const { name: tutorName } = user
-        const { courseName, meetingLink } = user.tutorInfo
+        const { courseName, meetingLink, courseDuration } = user.tutorInfo
+        const durationTransform = parseInt(courseDuration) / 60
 
         return Appointment.create({
           studentId: req.user.id,
           tutorId: user.id,
           appointmentDate,
           startTime: reqStartTime,
-          endTime: reqEndTime
+          endTime: reqEndTime,
+          courseDuration: durationTransform
         })
           .then(appointment => cb(null, {
             appointment: appointment.toJSON(),

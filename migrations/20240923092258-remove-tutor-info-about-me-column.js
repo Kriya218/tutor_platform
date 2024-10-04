@@ -10,9 +10,7 @@ module.exports = {
 
   async down (queryInterface, Sequelize) {
     await queryInterface.addColumn('Tutor_infos', 'about_me', {
-      about_me: {
         type: Sequelize.TEXT
-      }
     })
   }
 };

@@ -43,11 +43,6 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: 'student',
       allowNull: false
     },
-    totalStudyHours: {
-      type: DataTypes.INTEGER,
-      defaultValue: 0,
-      allowNull: false
-    },
     tutorInfoId: DataTypes.INTEGER,
     aboutMe: DataTypes.TEXT,
   }, {
