@@ -17,6 +17,9 @@ const userController = {
   },
   signIn: (req, res) => {
       req.flash('success_msg', '登入成功')
+      if (req.user.role === 'admin') {
+        return res.redirect('/admin/users')
+      }
       res.redirect('/tutors')
   },
   logout: (req, res) => {

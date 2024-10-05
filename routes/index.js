@@ -2,13 +2,16 @@ const express = require('express')
 const router = express.Router()
 
 const passport = require('../config/passport')
+const admin = require('./modules/admin')
 
 const userController = require('../controllers/user-controller')
 const appointmentController = require('../controllers/appointment-controller')
 
-const { authenticated } = require('../middlewares/auth')
+const { authenticated, authenticatedAdmin } = require('../middlewares/auth')
 const upload = require('../middlewares/multer')
 const { generalErrorHandler } = require('../middlewares/error-handler')
+
+router.use('/admin', authenticatedAdmin, admin)
 
 router.get('/signup', userController.signUpPage)
 router.post('/signup', userController.signUp)

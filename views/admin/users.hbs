@@ -1,0 +1,25 @@
+{{> header}}
+{{> messages}}
+<div class="container col-md-7">
+  <h3>User List</h3>
+  <table class="table table-striped mt-3">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Name</th>
+        <th scope="col">Email</th>
+        <th scope="col">Role</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each users}}
+      <tr>
+        <th scope="row">{{ this.id }}</th>
+        <td>{{ this.name }}</td>
+        <td>{{ this.email }}</td>
+        <td>{{ this.role }}</td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+</div>
