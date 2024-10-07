@@ -84,10 +84,13 @@ const appointmentService = {
           rating,
           description
         })
-          .then(feedback => cb(null, {
-            feedback: feedback.toJSON(),
-            tutorName: appointment.tutor.name
-          }))
+          .then(feedback => {
+            console.log('tutorName:', appointment.tutor.name)
+            return cb(null, {
+              feedback: feedback.toJSON(),
+              tutorName: appointment.tutor.name
+            })
+          })
       })
       .catch(err => cb(err))
   }

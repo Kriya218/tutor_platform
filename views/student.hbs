@@ -4,8 +4,7 @@
   <div class="row">
     <div class="col-md-3">
       <img src="{{user.image}}" class="profile-img" style="width: 70%;" alt="profile-photo">
-      <h3 class="mt-5">{{user.name}}</h3>
-      <p>評分</p>
+      <h3 class="my-5">{{user.name}}</h3>
       <h6 style="font-weight: 600;">自我介紹</h6>
       <p>{{user.aboutMe}}</p>
     </div>
@@ -34,6 +33,7 @@
         {{/each}}
       </div>
       <h6>待評分課程</h6>
+      <span style="color: gray; font-size:smaller;">*未提交評分紀錄不計入學習時數</span>
       {{#if finishedCourses}}
         <div class="row">
           {{#each finishedCourses}}
@@ -57,7 +57,7 @@
                           <label for="rating" class="col-form-label">課程評分</label>
                         </div>
                         <div class="col-md-7">
-                          <input type="number" id="rating" class="form-control" name="rating" min="0" max="10" step="0.1">
+                          <input type="number" id="rating" class="form-control" name="rating" min="0" max="10" step="0.1" required>
                         </div>                  
                       </div>
                       <div class="row g-3 align-items-center">

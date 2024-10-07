@@ -14,6 +14,10 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Tutor_info.init({
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true
+    },
     courseName: {
       type: DataTypes.STRING,
       allowNull: false
