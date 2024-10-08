@@ -55,15 +55,22 @@ const userService = {
             ...tutorInfo,
             introduction: tutorInfo.introduction ? tutorInfo.introduction.substring(0, 60) : ''
         }))
+        let results
+        if (tutors.length === 0 ) {
+          results = '查詢無結果，請輸入其他關鍵字'
+        } else {
+          results = tutors
+        }
         rankingService.getStudentRankings(8 , null, (err, rankings) => {
-          if (err) throw new Error(err)
+          if (err) cb(err)
           return cb (null, {
             id, 
             name, 
             role, 
-            tutors,
+            results,
             pagination: getPagination(limit, page, tutorInfos.count),
-            rankings
+            rankings,
+            keywords
           })
         })
       })
@@ -75,7 +82,11 @@ const userService = {
       attributes: ['id', 'name', 'role']
     })
       .then(user => {
-        if (user.role === 'tutor') throw new Error('身分已為老師')
+        if (user.id !== req.user.id) {
+          const err = new Error('無變更身分權限')
+          err.status = 403
+          return cb(err)
+        }
         return Tutor_info.create({
           courseName, 
           introduction,
@@ -86,6 +97,7 @@ const userService = {
         })
       })
       .then(tutor => {
+        console.log('tutor:', tutor)
         User.update(
           { tutor_info_id: tutor.id, role: 'tutor', aboutMe }, 
           { where: { id: req.user.id } }
@@ -156,27 +168,32 @@ const userService = {
     ])
     
       .then(([user, appointment, feedbackH, feedbackL, ratings]) => {
+        if (!user) {
+          const err = new Error('使用者不存在')
+          err.status = 404
+          return cb(err)
+        }
+        if (user.role !== 'tutor') {
+          const err = new Error('使用者身分非老師')
+          err.status = 403
+          return  cb(err)
+        }
         const opendays = 14
         const courseDuration = user.tutorInfo.courseDuration
         const days = user.tutorInfo.days
         const availableTimeSlots = getAvailableDate(opendays, courseDuration, days, appointment)
         const orderedFeedbacks = [...feedbackH, ...feedbackL]
+        const filteredFeedback = Array.from(new Set(orderedFeedbacks.map(feedback => feedback.id)))
+          .map(id => {
+            return orderedFeedbacks.find(feedback => feedback.id === id)
+          })
         const ratingArr = ratings.map(rating => rating.feedback.rating)
         const ratingAvg = Math.round(getAvg(ratingArr) * 10) / 10
-        if (!user) {
-          const err = new Error('使用者不存在')
-          err.status = 404
-          throw err
-        }
-        if (user.role !== 'tutor') {
-          const err = new Error('使用者身分非老師')
-          err.status = 403
-          throw err
-        }
-        cb(null, { user, availableTimeSlots:JSON.stringify(availableTimeSlots), orderedFeedbacks, ratingAvg })
+        
+        cb(null, { user, availableTimeSlots:JSON.stringify(availableTimeSlots), filteredFeedback, ratingAvg })
       })
       .catch(err => {
-        console.error('Error getProfile:', err)
+        console.error('Error:', err)
         return cb(err)
       })
   },
@@ -264,7 +281,7 @@ const userService = {
   },
   putTutor: (req, cb) => {
     const { file } = req
-    const { name, image, aboutMe, introduction, teachingStyle, courseName, meetingLink, courseDuration, days } = req.body
+    const { name, aboutMe, introduction, teachingStyle, courseName, meetingLink, courseDuration, days } = req.body
     return Promise.all([
       User.findByPk(req.user.id),
       Tutor_info.findByPk(req.user.tutorInfoId),
@@ -320,8 +337,7 @@ const userService = {
       .then(([user, appointments]) => {
         const bookedCourses = []
         const finishedCourses = []
-        if (!user) throw new Error('此用戶不存在')
-        if (user.role === 'tutor') {
+        if (!user || user.role === 'tutor') {
           const err = new Error('此頁面不存在')
           err.status = 404
           throw err
@@ -333,7 +349,7 @@ const userService = {
             bookedCourses.push(appointment)
           }
         })
-        rankingService.getStudentRankings(8 , req.params.id, (err, rankings) => {
+        rankingService.getStudentRankings(20 , req.params.id, (err, rankings) => {
           if (err) throw new Error(err)
           return cb (null, {
             user,

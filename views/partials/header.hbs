@@ -9,8 +9,7 @@
       <div class="navbar-nav">
         {{#ifCond role 'tutor'}}
         <a class="nav-link" href="/tutors/{{id}}">{{name}}</a>
-        {{/ifCond}}
-        {{#ifCond role 'student'}}
+        {{else}}
         <a class="nav-link" href="/user/{{id}}">{{name}}</a>
         <a class="nav-link" href="/tutors/apply">成為老師</a>
         {{/ifCond}}

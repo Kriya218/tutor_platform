@@ -1,6 +1,6 @@
-'use strict';
+'use strict'
 
-const appointment = require('../models/appointment');
+const appointment = require('../models/appointment')
 const { faker } = require('@faker-js/faker')
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
@@ -27,4 +27,4 @@ module.exports = {
   async down (queryInterface, Sequelize) {
     await queryInterface.bulkDelete('Feedbacks', {})
   }
-};
+}

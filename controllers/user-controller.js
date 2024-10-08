@@ -31,16 +31,27 @@ const userController = {
   },
   getTutors: (req, res, next) => {
     userService.getTutors(req, (err, data) => {
-      if (err) next(err)
       if (req.user.role === 'admin') {
-        req.flash('error_msg', '管理者無檢視前台權限')
-        return res.redirect('/signin')
+        const err = new Error('管理者無檢視前台權限')
+        err.status = 403
+        return next(err)
       }
+      if (err) return next(err)
       return res.render('index', data)
-    }) 
+    })
   },
-  getApplyPage: (req, res) => {
-    res.render('apply')
+  getApplyPage: (req, res, next) => {
+    if (req.user.role === 'admin') {
+      const err = new Error('管理者無檢視前台權限')
+      err.status = 403
+      return next(err)
+    }
+    if (req.user.role === 'tutor') {
+      const err = new Error('身分已為老師')
+      err.status = 403
+      return next(err)
+    }
+    return res.render('apply')
   },
   tutorApply: (req, res, next) => {
     userService.tutorApply(req, (err, data) => {
@@ -50,32 +61,50 @@ const userController = {
     })
   },
   getTutorProfile: (req, res, next) => {
+    if (req.user.role === 'admin') {
+      const err = new Error('管理者無檢視前台權限')
+      err.status = 403
+      return next(err)
+    }
     userService.getTutorProfile(req, (err, data) => {
+      const { name, id } = req.user
       if (err) {
         req.flash('error_msg', err.message)
         req.flash('status_code', err.status)
         res.redirect('/tutors')
       }
-      
-      res.render('tutor-profile', { ...data })
+      res.render('tutor-profile', { ...data, name, id })
     })
   },
   getTutorPage: (req, res, next) => {
-    if (req.user.id !== Number(req.params.id)) {
-      req.flash('error_msg', '無檢視頁面權限')
-      req.flash('status_code', 403)
-      res.redirect('/tutors')
-      }
+    if (req.user.role === 'admin') {
+      const err = new Error('管理者無檢視前台權限')
+      err.status = 403
+      return next(err)
+    }
+    if (req.user.id !== Number(req.params.id) || req.user.role !== 'tutor') {
+      const err = new Error('無檢視頁面權限')
+      err.status = 403
+      return next(err)
+    }
     userService.getTutorPage(req, (err, data) => {
       if (err) {
-        req.flash('error_msg', err.message)
-        req.flash('status_code', err.status)
-        res.redirect('/tutors')
+        return next(err)
       }
       return res.render('tutor', {...data})
     })
   },
   editTutor: (req, res, next) => {
+    if (req.user.role === 'admin') {
+      const err = new Error('管理者無檢視前台權限')
+      err.status = 403
+      return next(err)
+    }
+    if (req.user.id !== req.params.id) {
+      const err = new Error('無編輯權限')
+      err.status = 403
+      next(err)
+    }
     userService.editTutor(req, (err, data) => err ? next(err) : res.render('tutor-edit', data))
   },
   putTutor: (req, res, next) => {
@@ -86,17 +115,28 @@ const userController = {
     })
   },
   getUser: (req, res, next) => {
+    if (req.user.role === 'admin') {
+      const err = new Error('管理者無檢視前台權限')
+      err.status = 403
+      return next(err)
+    }
     userService.getUser(req, (err, data) => {
-      if (err) {
-        req.flash('error_msg', err.message)
-        req.flash('status_code', err.status)
-        return res.redirect('/tutors')
-      }
-      res.render('student', {...data})
+      const { name, id } = req.user
+      if (err) { return next(err)}
+      res.render('student', {...data, name, id})
     })
   },
   editUser: (req, res, next) => {
-    if (req.user.id !== Number(req.params.id)) throw new Error('無編輯權限')
+    if (req.user.role === 'admin') {
+      const err = new Error('管理者無檢視前台權限')
+      err.status = 403
+      return next(err)
+    }
+    if (req.user.id !== Number(req.params.id)) {
+      const err = new Error('無編輯權限')
+      err.status = 403
+      return next(err)
+    }
     userService.editUser(req, (err, data) => err ? next(err) : res.render('student-edit', data))
   },
   putUser: (req, res, next) => {

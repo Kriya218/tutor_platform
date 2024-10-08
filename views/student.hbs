@@ -68,7 +68,9 @@
                           <textarea class="form-control form-control-sm" id="description" name="description"></textarea>
                         </div>
                       </div>
+                      {{#ifCond ../user.id ../userId}}
                       <button type="submit" class="btn button d-flex mx-auto mt-3 feedback-btn" data-id="{{this.id}}">送出回饋</button>
+                      {{/ifCond}}
                     </form>
                   </div>
                 </div>

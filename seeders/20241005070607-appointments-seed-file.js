@@ -33,7 +33,7 @@ module.exports = {
           appointment_date: pastStartDate.add(i, 'day').format('YYYY-MM-DD'),
           start_time: slot.start_time,
           end_time: slot.end_time,
-          course_duration: '30',
+          course_duration: 0.5,
           status: 'booked',
           created_at: new Date(),
           updated_at: new Date()
@@ -46,7 +46,7 @@ module.exports = {
           appointment_date: futureStartDate.add(i, 'day').format('YYYY-MM-DD'),
           start_time: slot.start_time,
           end_time: slot.end_time,
-          course_duration: '30',
+          course_duration: 0.5,
           status: 'booked',
           created_at: new Date(),
           updated_at: new Date()
@@ -59,7 +59,7 @@ module.exports = {
           appointment_date: pastStartDate.add(i, 'day').format('YYYY-MM-DD'),
           start_time: slot.start_time,
           end_time: slot.end_time,
-          course_duration: '30',
+          course_duration: 0.5,
           status: 'completed',
           created_at: new Date(),
           updated_at: new Date()

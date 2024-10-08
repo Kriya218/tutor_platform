@@ -23,7 +23,11 @@ export function appointmentResult(tutorId) {
             <p><strong>課程</strong>：${data.courseName}</p>
             <p><strong>上課時間</strong>：${formattedDate} ${data.courseTime}</p>
             <p><strong>上課連結</strong>：<a href="${data.meetingLink}" target="_blank">${data.meetingLink}</a></p>`
-        } else {
+        } else if (data.error_msg) {
+          document.getElementById('modalBody').innerHTML=`
+          <p>預約失敗</p>
+          <p>${data.error_msg}</p>`
+        }else {
           document.getElementById('modalBody').innerHTML=`
           <p>預約失敗</p>
           <p>${data.courseTime} 時段已有人預約，請選擇其他時段</p>`

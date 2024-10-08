@@ -16,7 +16,8 @@ module.exports = (sequelize, DataTypes) => {
   Tutor_info.init({
     id: {
       type: DataTypes.INTEGER,
-      primaryKey: true
+      primaryKey: true,
+      autoIncrement: true
     },
     courseName: {
       type: DataTypes.STRING,

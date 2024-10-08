@@ -19,7 +19,7 @@
   <input type="text" class="form-control" id="meetingLink" name="meetingLink" value="{{user.tutorInfo.meetingLink}}" required>
 </div>
 <div class="mb-3">
-  <label for="courseDuration" class="form-label">單堂課程時長</label>
+  <label for="courseDuration" class="form-label">單堂課程時長 (預設單堂為30分鐘)</label>
   <select class="form-select form-select-sm" name="courseDuration" id="courseDuration"
     data-live-search="true" required>
     <option value="30" {{#ifCond user.tutorInfo.courseDuration '30'}}selected{{/ifCond}} selected>30 分鐘</option>
@@ -27,7 +27,7 @@
   </select>
 </div>
 <div class="mb-3 ">
-  <label class="form-label">可預約時間</label>
+  <label class="form-label">可預約時間 (預設為六日)</label>
   <div class="d-flex col">
     <div class="form-check me-3">
       <input class="form-check-input" type="checkbox" value="Monday" id="mon" name="days" {{#if (isInclude user.tutorInfo.days 'Monday')}}checked{{/if}}>
@@ -60,13 +60,13 @@
       </label>
     </div>
     <div class="form-check me-3">
-      <input class="form-check-input" type="checkbox" value="Saturday" id="sat" name="days" {{#if (isInclude user.tutorInfo.days 'Saturday')}}checked{{/if}}>
+      <input class="form-check-input" type="checkbox" value="Saturday" id="sat" name="days" {{#if (isInclude user.tutorInfo.days 'Saturday')}}checked{{/if}}checked>
       <label class="form-check-label" for="sat">
         星期六
       </label>
     </div>
     <div class="form-check">
-      <input class="form-check-input" type="checkbox" value="Sunday" id="sun" name="days" {{#if (isInclude user.tutorInfo.days 'Sunday')}}checked{{/if}}>
+      <input class="form-check-input" type="checkbox" value="Sunday" id="sun" name="days" {{#if (isInclude user.tutorInfo.days 'Sunday')}}checked{{/if}}checked>
       <label class="form-check-label" for="sun">
         星期日
       </label>

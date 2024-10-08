@@ -2,10 +2,14 @@ const appointmentService = require('../services/appointment-service')
 
 const appointmentController = {
   postAppointment: (req, res, next) => {
-    if (req.user.tutorInfoId) throw new Error('教師身分無法預約課程')
+    if (req.user.role === 'tutor') {
+      return res.json({
+        success: false,
+        error_msg: '教師身分無法預約'
+      })
+    }
     appointmentService.postAppointment(req, (err, data) => {
-      if (err) next(err)
-
+      if (err) return next(err)
       if (data.fail) {
         res.json({
           success: false,
@@ -23,7 +27,6 @@ const appointmentController = {
         })
       }
     })
-
   },
   postFeedback: (req, res, next) => {
     appointmentService.postFeedback(req, (err, data) => {

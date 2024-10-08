@@ -11,7 +11,9 @@ const authenticatedAdmin = (req, res, next) => {
     if (req.user.role === 'admin') { 
       return next()
     }
-    res.redirect('/')
+    const err = new Error('非管理員無檢視後台權限')
+    err.status = 403
+    return next(err)
   } else {
     res.redirect('/signin')
   }

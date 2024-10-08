@@ -3,7 +3,6 @@ const { User, Appointment, Tutor_info, sequelize } = require('../models')
 
 const rankingService = {
   getStudentRankings: (limit = 8, studentId = null, cb) => {
-    console.log('rankSerStudentId:', typeof studentId)
     Appointment.findAll({
       include: [{
           model: User,
