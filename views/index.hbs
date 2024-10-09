@@ -19,7 +19,7 @@
           <div class="card m-2 tutor-card px-0">
             <div class="card-body">
               <div class="d-flex">
-                <img src="{{this.user.image}}" class="index-img" style="width: 30%;" alt="tutor-photo">
+                  <img src="{{#if this.user.image}}{{this.user.image}}{{else}}https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ12lYNi9ON02p9zySLVYzHFAkvMdJtDiT2oA&s{{/if}}" class="index-img" style="width: 30%;" alt="tutor-photo">
                 <div class="ms-3 flex-column">
                   <a href="/tutors/{{this.user.id}}/profile">
                     <h5 class="card-title">{{this.courseName}}</h5>

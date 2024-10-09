@@ -3,9 +3,15 @@
 <div class="container col-md-9 mt-4">
   <div class="row">
     <div class="col-md-3">
-      <img src="{{user.image}}" class="profile-img" style="width: 70%;" alt="profile-photo">
+      <img src="{{#if user.image}}{{user.image}}{{else}}https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ12lYNi9ON02p9zySLVYzHFAkvMdJtDiT2oA&s{{/if}}" class="profile-img" style="width: 70%;" alt="profile-photo">
       <h3 class="mt-5">{{user.name}}</h3>
-      <p>{{ratingAvg}}<i class="fa-solid fa-star ms-1" style="color: #f4a258;"></i></p>
+      <p>
+        {{#ifIsNaN ratingAvg 'NaN'}}
+          尚未獲得評分
+        {{else}}
+          {{ratingAvg}}
+        {{/ifIsNaN}}
+      <i class="fa-solid fa-star ms-1" style="color: #f4a258;"></i></p>
       <h6 style="font-weight: 600;">自我介紹</h6>
       <p>{{user.aboutMe}}</p>
     </div>

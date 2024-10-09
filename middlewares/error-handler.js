@@ -8,10 +8,12 @@ module.exports = {
       req.flash('error_msg', `${err}`)
       req.flash('status_code', 500)
     }
-    if (req.user.role === 'admin') {
-      return res.redirect('/admin/users')
+
+    if (!req.user) {
+      res.redirect('back')
+    } else {
+      req.user.role === 'admin' ? res.redirect('/admin/users') : res.redirect('/tutors')
     }
-    res.redirect('/tutors')
     next(err)
   }
 }

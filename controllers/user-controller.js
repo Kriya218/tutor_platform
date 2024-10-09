@@ -51,7 +51,7 @@ const userController = {
       err.status = 403
       return next(err)
     }
-    return res.render('apply')
+    return res.render('apply', {name: req.user.name})
   },
   tutorApply: (req, res, next) => {
     userService.tutorApply(req, (err, data) => {
@@ -100,10 +100,10 @@ const userController = {
       err.status = 403
       return next(err)
     }
-    if (req.user.id !== req.params.id) {
+    if (req.user.id !== parseInt(req.params.id)) {
       const err = new Error('無編輯權限')
       err.status = 403
-      next(err)
+      return next(err)
     }
     userService.editTutor(req, (err, data) => err ? next(err) : res.render('tutor-edit', data))
   },

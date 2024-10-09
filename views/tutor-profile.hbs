@@ -4,7 +4,7 @@
   <div class="row justify-content-between">
     <div class="mt-3 col-md-8">
       <div class="d-flex">
-        <img src="{{user.image}}" class="profile-img" alt="student-photo">
+        <img src="{{#if user.image}}{{user.image}}{{else}}https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ12lYNi9ON02p9zySLVYzHFAkvMdJtDiT2oA&s{{/if}}" class="profile-img" alt="student-photo">
         <div class="flex-column ms-5">
           <h3 class="my-3">{{user.tutorInfo.courseName}}</h3>
           <ul>

@@ -15,6 +15,7 @@ const authenticatedAdmin = (req, res, next) => {
     err.status = 403
     return next(err)
   } else {
+    req.flash('error_msg', '請先登入')
     res.redirect('/signin')
   }
 }

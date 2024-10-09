@@ -8,7 +8,7 @@ const userController = require('../controllers/user-controller')
 const appointmentController = require('../controllers/appointment-controller')
 
 const { authenticated, authenticatedAdmin } = require('../middlewares/auth')
-const upload = require('../middlewares/multer')
+const { upload } = require('../helpers/file-helper')
 const { generalErrorHandler } = require('../middlewares/error-handler')
 
 router.use('/admin', authenticatedAdmin, admin)

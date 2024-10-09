@@ -7,7 +7,8 @@ const adminService = {
       raw: true
     })
       .then(users => {
-        return cb(null, { users })
+        const name = req.user.name
+        return cb(null, { users, name })
       })
       .catch(err => cb(err))
   }

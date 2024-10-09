@@ -36,7 +36,10 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true
     },
     courseDuration: DataTypes.ENUM('30', '60'),
-    days: DataTypes.JSON
+    days: {
+      type: DataTypes.JSON,
+      defaultValue: ["Saturday", "Sunday"]
+    }
   }, {
     sequelize,
     modelName: 'Tutor_info',

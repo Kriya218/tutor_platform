@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs')
 const dayjs = require('dayjs')
 const { User, Tutor_info, Appointment, Feedback } = require('../models')
 const { getOffset, getPagination } = require('../helpers/pagination-helper')
-const { localFileHandler } = require('../helpers/file-helper')
+const { fileHandler } = require('../helpers/file-helper')
 const { getAvailableDate, isFinished }  = require('../helpers/time-helper')
 const { getAvg } = require('../helpers/calculate-helper')
 const { rankingService } = require('../services/rankingService')
@@ -97,7 +97,6 @@ const userService = {
         })
       })
       .then(tutor => {
-        console.log('tutor:', tutor)
         User.update(
           { tutor_info_id: tutor.id, role: 'tutor', aboutMe }, 
           { where: { id: req.user.id } }
@@ -189,8 +188,8 @@ const userService = {
           })
         const ratingArr = ratings.map(rating => rating.feedback.rating)
         const ratingAvg = Math.round(getAvg(ratingArr) * 10) / 10
-        
-        cb(null, { user, availableTimeSlots:JSON.stringify(availableTimeSlots), filteredFeedback, ratingAvg })
+        const { name, role } = req.user 
+        cb(null, { user, availableTimeSlots:JSON.stringify(availableTimeSlots), filteredFeedback, ratingAvg, name, role })
       })
       .catch(err => {
         console.error('Error:', err)
@@ -258,13 +257,13 @@ const userService = {
           err.status = 403
           throw err
         }
-        cb(null, { user, appointments, feedbacks, ratingAvg })
+        cb(null, { user, appointments, feedbacks, ratingAvg, role: user.role, name: user.name })
       })
       .catch(err => cb(err))
   },
   editTutor: (req, cb) => {
     return User.findByPk(req.params.id, {
-      attributes: ['id', 'name', 'tutor_info_id', 'aboutMe'],
+      attributes: ['id', 'name', 'tutor_info_id', 'aboutMe', 'role'],
       include: [{ 
         model: Tutor_info,
         as:'tutorInfo'
@@ -275,6 +274,7 @@ const userService = {
       .then(user => {
         if (!user) throw new Error('此用戶不存在')
         if (user.id !== req.user.id) throw new Error('無編輯權限')
+        console.log('USER:', user)
         return cb(null, { user })
       })
       .catch(err => cb(err))
@@ -285,7 +285,7 @@ const userService = {
     return Promise.all([
       User.findByPk(req.user.id),
       Tutor_info.findByPk(req.user.tutorInfoId),
-      localFileHandler(file)
+      fileHandler(file)
     ])
       .then(([user, tutorInfo, filePath]) => {
         if (!user) throw new Error('使用者不存在')
@@ -337,6 +337,7 @@ const userService = {
       .then(([user, appointments]) => {
         const bookedCourses = []
         const finishedCourses = []
+        const { name, role } = req.user
         if (!user || user.role === 'tutor') {
           const err = new Error('此頁面不存在')
           err.status = 404
@@ -356,7 +357,9 @@ const userService = {
             userId,
             appointments: bookedCourses,
             finishedCourses,
-            rankings
+            rankings,
+            name,
+            role
           })
         })
       })
@@ -379,7 +382,7 @@ const userService = {
     const { file } = req
     return Promise.all([
       User.findByPk(req.params.id),
-      localFileHandler(file)
+      fileHandler(file)
     ])
       .then(([user, filePath]) => {
         if (!user) throw new Error('使用者不存在')

@@ -1,4 +1,17 @@
-{{> header}}
+<nav class="navbar navbar-expand-lg navbar-light ">
+  <div class="container-fluid">
+    <a class="navbar-brand ms-5" href="/">Tutor Platform</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
+      aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+      <div class="navbar-nav">
+        你好 {{name}}，歡迎登入
+        <a href="/logout" class="me-5 ms-3"> <i class="fa-solid fa-right-from-bracket me-1"></i>Logout</a>
+      </div>
+  </div>
+</nav>
+
 {{> messages}}
 <div class="container col-md-7">
   <h3>User List</h3>
