@@ -2,6 +2,7 @@ const fs = require('fs')
 const AWS = require('aws-sdk')
 const multer = require('multer')
 const multerS3 = require('multer-s3')
+const axios = require('axios')
 
 const s3 = new AWS.S3({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -46,5 +47,17 @@ const fileHandler = file => {
     return null
   }
 }
+const defaultAvatar = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ12lYNi9ON02p9zySLVYzHFAkvMdJtDiT2oA&s'
+const checkFile = async url => {
+  try {
+    const response = await axios.get(url)
+    if (response.status === 200) {
+      return url
+    }
+  } catch (err) {
+    return defaultAvatar
+  }
+}
+  
 
-module.exports = { fileHandler, upload }
+module.exports = { fileHandler, upload, checkFile }

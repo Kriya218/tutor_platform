@@ -3,10 +3,10 @@ const bcrypt = require('bcryptjs')
 const dayjs = require('dayjs')
 const { User, Tutor_info, Appointment, Feedback } = require('../models')
 const { getOffset, getPagination } = require('../helpers/pagination-helper')
-const { fileHandler } = require('../helpers/file-helper')
+const { fileHandler, checkFile } = require('../helpers/file-helper')
 const { getAvailableDate, isFinished }  = require('../helpers/time-helper')
 const { getAvg } = require('../helpers/calculate-helper')
-const { rankingService } = require('../services/rankingService')
+const { rankingService } = require('./ranking-service')
 
 const userService = {
   signUp: (req, cb) => {
@@ -48,7 +48,7 @@ const userService = {
       raw: true,
       nest: true
     })    
-      .then(tutorInfos => {
+      .then(async tutorInfos => {
         const { id, name, role } = req.user
         const tutors = tutorInfos.rows
           .map(tutorInfo => ({
@@ -59,7 +59,12 @@ const userService = {
         if (tutors.length === 0 ) {
           results = '查詢無結果，請輸入其他關鍵字'
         } else {
-          results = tutors
+          const updateTutors = await Promise.all(tutors.map(async tutor => {
+            const validImg = await checkFile(tutor.user.image)
+            tutor.user.image = validImg
+            return tutor
+          }))
+          results = updateTutors
         }
         rankingService.getStudentRankings(8 , null, (err, rankings) => {
           if (err) cb(err)
@@ -166,7 +171,7 @@ const userService = {
       })
     ])
     
-      .then(([user, appointment, feedbackH, feedbackL, ratings]) => {
+      .then(async ([user, appointment, feedbackH, feedbackL, ratings]) => {
         if (!user) {
           const err = new Error('使用者不存在')
           err.status = 404
@@ -189,7 +194,11 @@ const userService = {
         const ratingArr = ratings.map(rating => rating.feedback.rating)
         const ratingAvg = Math.round(getAvg(ratingArr) * 10) / 10
         const { name, role } = req.user 
-        cb(null, { user, availableTimeSlots:JSON.stringify(availableTimeSlots), filteredFeedback, ratingAvg, name, role })
+        const updateTutor = {
+          ...user,
+          image: await checkFile(user.image)
+        }
+        cb(null, { user: updateTutor, availableTimeSlots:JSON.stringify(availableTimeSlots), filteredFeedback, ratingAvg, name, role })
       })
       .catch(err => {
         console.error('Error:', err)
@@ -249,7 +258,7 @@ const userService = {
         nest: true
       })
     ])
-      .then(([user, appointments, feedbacks, ratings]) => {
+      .then(async([user, appointments, feedbacks, ratings]) => {
         const ratingArr = ratings.map(rating => rating.feedback.rating)
         const ratingAvg = Math.round(getAvg(ratingArr) * 10) / 10
         if (user.role !== 'tutor') {
@@ -257,7 +266,12 @@ const userService = {
           err.status = 403
           throw err
         }
-        cb(null, { user, appointments, feedbacks, ratingAvg, role: user.role, name: user.name })
+        const updatedTutor =  {
+          ...user,
+          image: await checkFile(user.image)
+        }
+
+        cb(null, { user: updatedTutor, appointments, feedbacks, ratingAvg, role: user.role, name: user.name })
       })
       .catch(err => cb(err))
   },
@@ -334,7 +348,7 @@ const userService = {
         nest: true
       })
     ])
-      .then(([user, appointments]) => {
+      .then(async ([user, appointments]) => {
         const bookedCourses = []
         const finishedCourses = []
         const { name, role } = req.user
@@ -343,7 +357,17 @@ const userService = {
           err.status = 404
           throw err
         }
-        appointments.forEach(appointment => {
+        const updatedUser = {
+          ...user,
+          image: await checkFile(user.image)
+        }
+        const updatedAppointments = await Promise.all(appointments.map(async appointment => {
+          const validImg = await checkFile(appointment.tutor.image)
+          appointment.tutor.image = validImg
+          return appointment
+        }) )
+
+        updatedAppointments.forEach(appointment => {
           if(isFinished(appointment.appointmentDate, appointment.endTime)) {
             finishedCourses.push(appointment)
           } else {
@@ -353,7 +377,7 @@ const userService = {
         rankingService.getStudentRankings(20 , req.params.id, (err, rankings) => {
           if (err) throw new Error(err)
           return cb (null, {
-            user,
+            user: updatedUser,
             userId,
             appointments: bookedCourses,
             finishedCourses,

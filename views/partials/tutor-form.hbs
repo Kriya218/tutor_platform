@@ -16,7 +16,7 @@
 </div>
 <div class="mb-3">
   <label for="meetingLink" class="form-label">上課視訊連結</label>
-  <input type="text" class="form-control" id="meetingLink" name="meetingLink" value="{{user.tutorInfo.meetingLink}}" required>
+  <input type="url" class="form-control" id="meetingLink" name="meetingLink" value="{{user.tutorInfo.meetingLink}}" placeholder="https://example.com" pattern="https://.*" required>
 </div>
 <div class="mb-3">
   <label for="courseDuration" class="form-label">單堂課程時長 (預設單堂為30分鐘)</label>

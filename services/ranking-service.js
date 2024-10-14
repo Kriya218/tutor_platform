@@ -1,5 +1,6 @@
 const { Sequelize } = require('sequelize')
 const { User, Appointment, Tutor_info, sequelize } = require('../models')
+const { checkFile } = require('../helpers/file-helper')
 
 const rankingService = {
   getStudentRankings: (limit = 8, studentId = null, cb) => {
@@ -21,12 +22,17 @@ const rankingService = {
       raw: true,
       nest: true
     })
-      .then(rankings => {
+      .then(async rankings => {
         if (studentId) {
           const rank = rankings.findIndex(ranking => ranking.studentId === parseInt(studentId)) + 1
           return cb(null, rank)
         }
-        return cb(null, rankings)
+        const updatedRankings = await Promise.all(rankings.map(async ranking => {
+            const validImg = await checkFile(ranking.student.image)
+            ranking.student.image = validImg
+            return ranking
+          }))
+        return cb(null, updatedRankings)
       })
       .catch(err => cb(err))
   }
