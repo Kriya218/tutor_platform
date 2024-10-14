@@ -46,4 +46,23 @@ git cd Restaurants-List
 ``` 
 npm install 
 ```
-4. Run on server 啟動伺服器，點擊URL http://localhost:3000
+4. MySQL schema 建立 schema
+``` 
+npx sequelize db:migrate
+```
+5. seeder file 執行種子檔案
+``` 
+npx sequelize db:seed:all
+```
+6. Set NODE_ENV, Run on server 設置環境變數並啟動伺服器，點擊 URL http://localhost:3000
+``` 
+export NODE_ENV=development
+npm run dev
+```
+### Test accounts
+  - Root(後臺管理員身分)
+    - Email: root@example.com
+    - Passsword: 12345678 
+  - User1(一般學生身分)
+    - Email: user1@example.com
+    - Passsword: 12345678 
